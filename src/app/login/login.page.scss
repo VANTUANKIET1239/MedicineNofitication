@@ -1,0 +1,14 @@
+.custom{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+}
+.image-container img {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  /* Add any additional image styling here */
+}
