@@ -1,28 +1,53 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Login</ion-title>
+    <ion-title>Đăng nhập</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" >
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Login</ion-title>
+      <ion-title size="large">Đăng nhập</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-row class="custom ion-align-items-center ion-justify-content-center">
+
     <ion-col size="12">
+      <!-- <h2 style="font-weight: bold;" class="ion-text-center ion-margin-bottom">Đăng nhập</h2> -->
       <div class="image-container ion-text-center">
         <img src="../../assets/image/medical-folder-icon-1024x1024-pcc8rd2e.png" alt="">
       </div>
-      <form>
-        <ion-item class="ion-margin-bottom">
-          <ion-label position="floating">Số điện thoại</ion-label>
-          <ion-input type="number" name="phone"></ion-input>
-        </ion-item>
-        <ion-button expand="full" type="submit">Xác nhận</ion-button>
-      </form>
+
+      <ng-container *ngIf="isLogin">
+        <form (ngSubmit)="GetOTP()">
+          <ion-item class="ion-margin-bottom">
+            <ion-label label = "numberPhone" position="floating">Số điện thoại</ion-label>
+            <ion-input aria-label="numberPhone" [(ngModel)]="phoneNumber" type="text" name="phone"></ion-input>
+          </ion-item>
+          <ion-button class="mb-3 btn-login" expand="full" type="submit">Xác nhận</ion-button>
+          <hr/>
+        </form>
+        <div id="sign-in-button"></div>
+      </ng-container>
+
+      <ng-container *ngIf="!isLogin">
+        <form (ngSubmit)="VerifyOTP()">
+          <ion-item class="ion-margin-bottom">
+            <ion-label label="otp" position="floating">Mã xác thực OTP:</ion-label>
+            <ion-input  aria-label="otp" [(ngModel)]="OtpNumber" max="6" min="6" type="text" name="phone"></ion-input>
+          </ion-item>
+          <ion-button class="mb-3 btn-login" expand="full" type="submit">Gửi mã OTP</ion-button>
+          <hr/>
+        </form>
+      </ng-container>
     </ion-col>
   </ion-row>
 </ion-content>
+  <!-- <ion-button class="mt-3 btn-login"
+                    style="color: black;"
+                    color="secondary"
+                    expand="full"
+                    routerLink = "/register"
+                    type="submit">Đăng ký
+        </ion-button> -->
