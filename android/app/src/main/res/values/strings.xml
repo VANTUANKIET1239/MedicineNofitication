@@ -4,4 +4,5 @@
     <string name="title_activity_main">MedicineZ</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="server_client_id">328359127603-mq86l3909h5sft95nesfsqa7oful1063.apps.googleusercontent.com</string>
 </resources>

@@ -7,14 +7,18 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { HttpClientModule } from '@angular/common/http';
 
 
+defineCustomElements(window);
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule,
             IonicModule.forRoot(),
             AppRoutingModule,
             RouterModule,
+            HttpClientModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
