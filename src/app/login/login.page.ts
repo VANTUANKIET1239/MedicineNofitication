@@ -62,7 +62,7 @@ export class LoginPage implements OnInit {
   ngOnInit() {
       var phoneUser = localStorage.getItem('phoneNumber');
       if(phoneUser){
-        this.route.navigate(['/main']);
+        this.route.navigate(['/main/tab1']);
       }
   }
   GetOTP(){

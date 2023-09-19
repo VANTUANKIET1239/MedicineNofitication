@@ -24,8 +24,6 @@ export class GoogleCalendarService {
 
    });
 
-
-
  }
  async insertEvent() : Promise<boolean>{
 // Set the access token in the gapi.client object

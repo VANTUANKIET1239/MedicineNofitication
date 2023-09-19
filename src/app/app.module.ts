@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 defineCustomElements(window);
@@ -18,7 +19,9 @@ defineCustomElements(window);
             IonicModule.forRoot(),
             AppRoutingModule,
             RouterModule,
-            HttpClientModule
+            HttpClientModule,
+            FormsModule,
+            ReactiveFormsModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

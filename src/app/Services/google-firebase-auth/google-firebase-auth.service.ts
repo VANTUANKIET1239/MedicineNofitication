@@ -13,6 +13,7 @@ constructor() {
 }
   async signIn(){
     var user = await GoogleAuth.signIn();
+    console.log(user);
     localStorage.setItem("ggtoken",user.authentication.accessToken);
   }
   async signOut(){

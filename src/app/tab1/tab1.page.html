@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 1
+      Thêm thuốc
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -12,6 +12,50 @@
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
+  <form >
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  </form>
+  <form  (ngSubmit)="submitForm()" [formGroup]="prescriptionForm">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Prescription Name</ion-label>
+        <ion-input formControlName="prescriptionName" type="text" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Doctor Name</ion-label>
+        <ion-input formControlName="doctorName" type="text" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Medicine Store Name</ion-label>
+        <ion-input formControlName="medicineStoreName" type="text" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>To Date</ion-label>
+        <!-- <ion-datetime
+          formControlName="toDate"
+          display-format="MMM DD, YYYY"
+          min="2000-01-01"
+          max="2099-12-31"
+          presentation="date"
+          [preferWheel]="true"
+          required
+        ></ion-datetime> -->
+        <input type="date">
+      </ion-item>
+      <ion-item>
+        <ion-label>Buy Date</ion-label>
+        <ion-datetime
+          formControlName="buyDate"
+          display-format="MMM DD, YYYY"
+          min="2000-01-01"
+          max="2099-12-31"
+          required
+        ></ion-datetime>
+      </ion-item>
+    </ion-list>
+    <ion-button expand="full" type="submit" [disabled]="prescriptionForm.invalid">Create Prescription</ion-button>
+  </form>
 </ion-content>
