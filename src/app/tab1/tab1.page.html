@@ -1,61 +1,80 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Thêm thuốc
+      Đơn thuốc
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
-  <form >
 
-  </form>
-  <form  (ngSubmit)="submitForm()" [formGroup]="prescriptionForm">
-    <ion-list>
-      <ion-item>
-        <ion-label position="floating">Prescription Name</ion-label>
-        <ion-input formControlName="prescriptionName" type="text" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Doctor Name</ion-label>
-        <ion-input formControlName="doctorName" type="text" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Medicine Store Name</ion-label>
-        <ion-input formControlName="medicineStoreName" type="text" required></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>To Date</ion-label>
-        <!-- <ion-datetime
-          formControlName="toDate"
-          display-format="MMM DD, YYYY"
-          min="2000-01-01"
-          max="2099-12-31"
-          presentation="date"
-          [preferWheel]="true"
-          required
-        ></ion-datetime> -->
-        <input type="date">
-      </ion-item>
-      <ion-item>
-        <ion-label>Buy Date</ion-label>
-        <ion-datetime
-          formControlName="buyDate"
-          display-format="MMM DD, YYYY"
-          min="2000-01-01"
-          max="2099-12-31"
-          required
-        ></ion-datetime>
-      </ion-item>
-    </ion-list>
-    <ion-button expand="full" type="submit" [disabled]="prescriptionForm.invalid">Create Prescription</ion-button>
-  </form>
+  <ion-segment [(ngModel)]="selectedSegment">
+    <ion-segment-button value="button1" (click)="selectButton('button1')"
+      [ngClass]="{'selected': selectedSegment === 'button1'}">
+      Đơn thuóc
+    </ion-segment-button>
+    <ion-segment-button value="button2" (click)="selectButton('button2')"
+      [ngClass]="{'selected': selectedSegment === 'button2'}">
+      Thuốc lẻ
+    </ion-segment-button>
+  </ion-segment>
+  <ng-container *ngFor="let item of ListPres">
+    <ion-card  class="ion-margin-bottom" style="padding: 10px;background-color: #afccff;">
+      <ion-card-header class="card-head">
+        <div>
+          <ion-card-title>{{item.prescriptionName}}</ion-card-title>
+          <ion-card-subtitle>{{item.doctorName}}</ion-card-subtitle>
+        </div>
+        <div>
+          <ion-button (click) = "editItem(item.prescriptionId || '')" ion-button color="warning">Chỉnh sửa</ion-button>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-accordion-group style="background-color: #afccff;margin-bottom: 8px;" expand="inset">
+          <ion-accordion value="first" class="medicine-group-show">
+            <ion-item slot="header" color="light">
+              <ion-label>Danh sách thuốc</ion-label>
+            </ion-item>
+            <div class="ion-padding " slot="content">
+                <ng-container *ngFor="let medi of item.prescriptionDetails">
+                  <div class="list-medicine-gr">
+                    <div class="medicine-name">
+                        {{medi.medicineName || 'None' | TransformText:40}}
+                    </div>
+                    <div class="medicine-quantity">
+                      {{medi.quantityPerDose || 0}}
+                    </div>
+                  </div>
+                </ng-container>
+            </div>
+          </ion-accordion>
+      </ion-accordion-group>
+
+        <div class="time-itemshow">
+          <ng-container *ngFor="let timeshow of item.time">
+            <div class="time-item">
+              {{timeshow | timeDisplay}}
+            </div>
+          </ng-container>
+        </div>
+
+      </ion-card-content>
+      <div class="btn-group">
+        <ion-button color="secondary">Ghi nhận</ion-button>
+        <ion-button ion-button color="danger">Xóa</ion-button>
+      </div>
+    </ion-card>
+  </ng-container>
 </ion-content>
+
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 20px; margin-right: 20px;">
+  <ion-fab-button (click)="addItem()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

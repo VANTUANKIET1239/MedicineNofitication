@@ -6,6 +6,8 @@ import { Tab1Page } from './tab1.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 import { Tab1PageRoutingModule } from './tab1-routing.module';
+import { TimeDisplayPipe } from '../Pipes/TimeDisplay.pipe';
+import { PipesModule } from '../Pipes/pipes.module';
 
 @NgModule({
   imports: [
@@ -14,7 +16,8 @@ import { Tab1PageRoutingModule } from './tab1-routing.module';
     FormsModule,
     ExploreContainerComponentModule,
     Tab1PageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PipesModule
   ],
   declarations: [Tab1Page]
 })

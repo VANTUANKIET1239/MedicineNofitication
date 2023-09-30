@@ -1,111 +1,167 @@
-import { Component, OnInit } from '@angular/core';
-import { ConfirmationResult, getAuth, GoogleAuthProvider, PhoneAuthProvider, RecaptchaVerifier, signInWithCredential, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
-import { AngularFireModule } from '@angular/fire/compat';
-import { initializeApp } from 'firebase/app';
+
+import { Component, OnInit, inject } from '@angular/core';
+import { ConfirmationResult, getAuth, GoogleAuthProvider, PhoneAuthProvider, RecaptchaVerifier, signInWithCredential, signInWithPhoneNumber, signInWithPopup, user ,Auth, User, signInWithCustomToken, onAuthStateChanged, authState} from "@angular/fire/auth";
 import { environment } from 'src/environments/environment';
-import { Route, Router } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Toast } from '@capacitor/toast';
 import { GoogleCalendarService } from '../Services/GoogleCalendarService/google-calendar.service';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { isPlatform } from '@ionic/angular';
 import { GoogleFirebaseAuthService } from '../Services/google-firebase-auth/google-firebase-auth.service';
-
+import { NavController } from '@ionic/angular';
+import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
 //const app = initializeApp(environment.firebase);
-const app = initializeApp({
-  apiKey: "AIzaSyB59ZKtqB6hIaTgVby5u0bYbaW38-xku-w",
-authDomain: "drugnotification-267ca.firebaseapp.com",
-projectId: "drugnotification-267ca",
-storageBucket: "drugnotification-267ca.appspot.com",
-messagingSenderId: "467612996582",
-appId: "1:467612996582:web:bd8dc15c6c0f0800407c27",
-measurementId: "G-XF1MGCSSBB"
-});
+// const app = initializeApp({
+//   apiKey: "AIzaSyB59ZKtqB6hIaTgVby5u0bYbaW38-xku-w",
+// authDomain: "drugnotification-267ca.firebaseapp.com",
+// projectId: "drugnotification-267ca",
+// storageBucket: "drugnotification-267ca.appspot.com",
+// messagingSenderId: "467612996582",
+// appId: "1:467612996582:web:bd8dc15c6c0f0800407c27",
+// measurementId: "G-XF1MGCSSBB"
+// });
 declare var gapi:any;
-const auth = getAuth(app);
+// const auth = getAuth();
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit {
-  public phoneNumber:any;
+export class LoginPage extends ComponentBase implements OnInit {
+  public phoneNumber!:number;
   public reCapchaVerifier: any;
   public OtpNumber:any;
   public isLogin:boolean = true;
 
   public verify!:any;
   public otpcomfirmationResult!:ConfirmationResult;
+  private auth:Auth = inject(Auth);
+  authState$ = authState(this.auth as any);
+  user$ =this.auth.currentUser;
   constructor(private route:Router,
-              private googleCalendarService: GoogleCalendarService,
-              private googleAuth:GoogleFirebaseAuthService
+              private navCtrl: NavController,
+              private routeAct: ActivatedRoute
+              // private googleCalendarService: GoogleCalendarService,
+              // private googleAuth:GoogleFirebaseAuthService
     ) {
+        super();
+   }
+  //  async Login(){
+  //     await this.googleAuth.signIn();
+  //  }
 
-   }
-   async Login(){
-      await this.googleAuth.signIn();
-   }
-
-   async Logout(){
-      await this.googleAuth.signOut();
-   }
-   async Refresh(){
-      await this.googleAuth.refresh();
-   }
-   async CreateCalendarEvent(){
-      var result = await this.googleCalendarService.insertEvent();
-      if(result){
-          this.ShowNofitication("OK");
-      }
-      else this.ShowNofitication("NO");
-   }
+  //  async Logout(){
+  //     await this.googleAuth.signOut();
+  //  }
+  //  async Refresh(){
+  //     await this.googleAuth.refresh();
+  //  }
+  //  async CreateCalendarEvent(){
+  //     var result = await this.googleCalendarService.insertEvent();
+  //     if(result){
+  //         this.ShowNofitication("OK");
+  //     }
+  //     else this.ShowNofitication("NO");
+  //  }
 
   ngOnInit() {
-      var phoneUser = localStorage.getItem('phoneNumber');
-      if(phoneUser){
-        this.route.navigate(['/main/tab1']);
-      }
+      this.onInitAuth();
+
+  }
+  private onInitAuth(){
+
+   // const storedToken = localStorage.getItem('accessToken');
+      this.authState$.subscribe((aUser: User | null) => {
+          if(aUser?.phoneNumber){
+            console.log(aUser);
+            this.ShowNofitication(aUser.phoneNumber);
+            this.navCtrl.navigateRoot('/main');
+          }
+          else{
+            this.ShowNofitication("that bai");
+          }
+      });
+
   }
   GetOTP(){
 
-        this.reCapchaVerifier = new RecaptchaVerifier( 'sign-in-button', {size:'invisible'}, auth);
-        signInWithPhoneNumber(auth,this.phoneNumber, this.reCapchaVerifier).then(confirmationResult => {
-          this.otpcomfirmationResult = confirmationResult;
-          this.isLogin = !this.isLogin;
-        }).catch((error) => {
-          setTimeout(() => {
-            window.location.reload;
-          }, 5000);
-          this.isLogin = !this.isLogin;
-        });
+        try{
+          var phoneNum:string = this.phoneNumber.toString() ?? "";
+          console.log(this.phoneNumber);
+          if(phoneNum == '' || phoneNum == undefined){
+              this.ShowNofitication('Bạn chưa nhập số điện thoại');
+          }
+          else if(phoneNum.length < 10 ){
+            this.ShowNofitication('Số điện thoại bạn nhập chưa đúng');
+          }
+          else{
+              phoneNum = "+1" + phoneNum;
+              this.reCapchaVerifier = new RecaptchaVerifier('sign-in-button',{size:'invisible'},this.auth);
+              signInWithPhoneNumber(this.auth,phoneNum, this.reCapchaVerifier).then(confirmationResult => {
+              this.otpcomfirmationResult = confirmationResult;
+              this.isLogin = !this.isLogin;
+            }).catch((error) => {
+              setTimeout(() => {
+                window.location.reload;
+              }, 5000);
+              this.isLogin = !this.isLogin;
+            });
+          }
+        }
+        catch(e:any){
+            this.ShowNofitication("Số điện thoại cần được nhập");
+        }
   }
+  onOtpChange(otp:string){
+      this.OtpNumber = otp;
+  }
+  // VerifyOTP(){
+  //   console.log(this.OtpNumber);
+  //   this.otpcomfirmationResult.confirm(this.OtpNumber)
+  //   .then((result) => {
+  //       if(result.user){
+  //         console.log(result);
+  //           let phone = result.user.phoneNumber || '';
+  //           localStorage.setItem("phoneNumber",phone);
+  //      //     localStorage.setItem("accessToken",result.user);
+  //           //this.route.navigate(['/main']);
+  //           this.navCtrl.navigateRoot('/main');
+  //       }
+  //   })
+  //   .catch((error) => {
+  //       this.ShowNofitication("Đã có lỗi xảy ra hoặc nhập OTP sai, xin mời thử lại" + error.message);
+  //       this.isLogin = !this.isLogin;
+  //   });
+  // }
   VerifyOTP(){
     console.log(this.OtpNumber);
-    this.otpcomfirmationResult.confirm(this.OtpNumber)
-    .then((result) => {
-        console.log(result.user.phoneNumber);
-        let phone = result.user.phoneNumber || '';
-        localStorage.setItem("phoneNumber",phone);
-        this.route.navigate(['/main']);
-    })
-    .catch((error) => {
-
-        alert("Đã có lỗi xảy ra hoặc nhập OTP sai, xin mời thử lại" + error.message);
-        this.isLogin = !this.isLogin;
-    });
-  }
-  async ShowNofitication(message: string){
-    try {
-      await Toast.show({
-        text: message,
-        duration: 'short'
-      });
-    } catch (error) {
-      console.error('Error displaying toast:', error);
-    }
-  }
-
-  onOtpChange(){
+    var credential = PhoneAuthProvider.credential(this.otpcomfirmationResult.verificationId, this.OtpNumber);
+    signInWithCredential(this.auth,credential).then((result) => {
+            if(result.user){
+              console.log(result);
+                let phone = result.user.phoneNumber || '';
+                localStorage.setItem("phoneNumber",phone);
+          //     localStorage.setItem("accessToken",result.user);
+              this.navCtrl.navigateRoot('/main');
+            }
+        })
+        .catch((error) => {
+            this.ShowNofitication("Đã có lỗi xảy ra hoặc nhập OTP sai, xin mời thử lại" + error.message);
+            this.isLogin = !this.isLogin;
+        });
 
   }
+
+  // async ShowNofitication(message: string){
+  //   try {
+  //     await Toast.show({
+  //       text: message,
+  //       duration: 'short'
+  //     });
+  //   } catch (error) {
+  //     console.error('Error displaying toast:', error);
+  //   }
+  // }
+
 
 }

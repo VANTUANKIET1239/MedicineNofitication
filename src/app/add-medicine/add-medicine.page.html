@@ -1,0 +1,132 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+        {{model.prescriptionId ? "Chỉnh sửa Đơn" :"Thêm đơn"}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 1</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-row class="ion-align-items-center ion-justify-content-center ion-margin-top">
+    <ion-col size="12">
+      <div class="image-container ion-text-center">
+        <img src="../../assets/image/medical-folder-icon-1024x1024-pcc8rd2e.png" alt="">
+      </div>
+      <form class="form-create" (ngSubmit)="SaveInput()" [formGroup]="prescriptionForm">
+
+
+        <div class="form-control">
+          <ion-input class="input-create" label="Tên đơn thuốc (*)" label-placement="floating" fill="outline"
+            formControlName="prescriptionName" type="text" required></ion-input>
+        </div>
+        <div class="form-control">
+          <ion-input class="input-create" label="Bác sĩ" label-placement="floating" fill="outline"
+            formControlName="doctorName" type="text"></ion-input>
+        </div>
+
+        <div class="form-control">
+          <ion-input class="input-create" label="Mua tại" label-placement="floating" fill="outline"
+            formControlName="medicineStoreName" type="text"></ion-input>
+        </div>
+        <div class="form-control">
+          <ion-row>
+              <ion-col size="12">
+                <ion-button (click) = "addMedicine()" style="margin-bottom: 10px;" expand="block">
+                  <ion-icon name="add-outline"></ion-icon> Thêm thuốc
+                </ion-button>
+                <div formArrayName="medicineArrays" >
+                  <ng-container *ngFor="let item of medicineArrays.controls;index as i">
+                      <div [formGroupName] = "i" class="custom-container">
+                        <div style="width: 70%;background-color: white;">
+                          <ion-input id="name" class="medicine-input" label="Tên thuốc" label-placement="floating" fill="outline" formControlName="medicine" type="text" required></ion-input>
+                            <!-- <ng-container  *ngIf="item.get('medicine')?.hasError('required')">
+                              <ion-text color="danger">Thông tin thuốc cần được nhập</ion-text>
+                            </ng-container> -->
+                        </div>
+                        <div style="width: 50px;;background-color: white;">
+                          <ion-input class="quantity-input" label-placement="floating" fill="outline" min="0" max="9" formControlName="quantity" type="number" required></ion-input>
+                        </div>
+                        <div>
+                          <ion-button style="width: 100%;height: 100%; padding: 0;" (click) = "deleteItemArrays(i,'medicine')" color="danger">
+                            <ion-icon name="close-outline"></ion-icon>
+                          </ion-button>
+                        </div>
+                      </div>
+                  </ng-container>
+
+                </div>
+              </ion-col>
+          </ion-row>
+      </div>
+        <div class="form-control">
+          <ion-item>
+            <ion-toggle formControlName="isAllDate" justify="space-between">Mọi ngày</ion-toggle>
+          </ion-item>
+        </div>
+        <div class="form-control">
+          <ion-item>
+            <ion-label>Từ ngày</ion-label>
+            <ion-datetime-button datetime="datetime"></ion-datetime-button>
+          </ion-item>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="datetime" formControlName = "fromDate" (ionChange) = "checkDateTime()" presentation="date"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+
+        </div>
+
+        <div class="form-control">
+          <ion-item>
+            <ion-label>Đến ngày</ion-label>
+            <ion-datetime-button datetime="datetime1">+</ion-datetime-button>
+          </ion-item>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="datetime1" formControlName = "toDate" (ionChange) = "checkDateTime()"  presentation="date"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+
+        </div>
+
+        <div class="form-control">
+          <ion-row>
+              <ion-col size="2">
+                <ion-button id="open-modal" expand="block">
+                  <ion-icon name="add-outline"></ion-icon>
+                </ion-button>
+                <ion-modal trigger="open-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+                  <ng-template>
+                    <div class="btn-selected-time">
+                      <ion-button style="width: 100px;" (click) = "selectedTime()">Chọn</ion-button>
+                    </div>
+
+                  <div class="centered-content">
+                    <ion-datetime formControlName = "pickTime" presentation="time" [preferWheel]="true"></ion-datetime>
+                  </div>
+                  </ng-template>
+                </ion-modal>
+              </ion-col>
+              <ion-col size="10">
+                <ng-container *ngFor="let time of model.time;index as i">
+                  <div class="custom-container">
+                    <div class="custom-time">{{time | timeDisplay}}</div>
+                    <ion-button style="width: 20%;" (click) = "deleteItemArrays(i,'time')" color="danger">
+                      <ion-icon name="close-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </ng-container>
+              </ion-col>
+          </ion-row>
+      </div>
+        <ion-button expand="full" type="submit">{{model.prescriptionId ? "Chỉnh sửa":"Thêm"}}</ion-button>
+      </form>
+
+    </ion-col>
+  </ion-row>
+</ion-content>

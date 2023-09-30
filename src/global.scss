@@ -24,3 +24,10 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+.image-container img {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  /* Add any additional image styling here */
+}
