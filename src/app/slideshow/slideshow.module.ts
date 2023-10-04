@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { SlideshowPageRoutingModule } from './slideshow-routing.module';
 
 import { SlideshowPage } from './slideshow.page';
+import { NewsServiceService } from '../Services/news-service/news-service.service';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { SlideshowPage } from './slideshow.page';
     SlideshowPageRoutingModule
   ],
   declarations: [SlideshowPage],
+
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
 })

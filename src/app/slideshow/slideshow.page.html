@@ -1,27 +1,28 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>slideshow</ion-title>
+    <ion-title>Slideshow</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <Swiper-container 
-  [slidesPerView]="1"
-  [spaceBetween]="10"
-  [centeredSlides]="true"
-  
-  [loop]="true"
-  [pagination]="true"
-  [autoplay]="5000">
-  <swiper-slide *ngFor="let mem of News">
-    <a [href]="mem?.detail" target="_blank" class="my-card">
-      <ion-card class="my-card">
-        <ion-card-header  class="img-title">
-          <ion-card-title>{{mem?.title}}</ion-card-title>
-        </ion-card-header>
-        <ion-img [src]="mem?.img" class="my-img"></ion-img>
-      </ion-card>
-    </a>
-  </swiper-slide>
-</Swiper-container>
+  <Swiper-container class="swiper-container"
+    [slidesPerView]="1"
+    [spaceBetween]="10"
+    [centeredSlides]="true"
+    [loop]="true"
+    [pagination]="true"
+    [autoplay]="5000">
+    <swiper-slide *ngFor="let mem of ListNews">
+      <div class="my-card-container">
+        <a [routerLink]="['/detail-news', mem.id]" class="my-card">
+          <ion-card class="my-card">
+            <ion-card-header class="img-title">
+              <ion-card-title>{{ mem?.title }}</ion-card-title>
+            </ion-card-header>
+            <ion-img [src]="mem?.img" class="my-img"></ion-img>
+          </ion-card>
+        </a>
+      </div>
+    </swiper-slide>
+  </Swiper-container>
 </ion-content>
