@@ -1,48 +1,47 @@
 .swiper-container {
-    width: 100%;
+  width: 100%;
+  height: 100%;
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .my-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100%;
-  
-    .swiper-slide {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-    .my-card-container {
-      display: flex;
-      justify-content: center; /* Căn giữa theo chiều ngang */
-      align-items: center; /* Căn giữa theo chiều dọc */
-      height: 100%;
-    }
-  
+
     .my-card {
       width: 90%;
-      max-width: 320px; /* Đảm bảo rộng nhất không quá 320px */
+      max-width: 320px;
       height: 250px;
-      display: flex; /* Hiển thị nội dung theo chiều dọc và chiều ngang */
-      flex-direction: column; /* Hiển thị nội dung theo chiều dọc */
-      justify-content: center; /* Căn giữa theo chiều dọc */
-      align-items: center; /* Căn giữa theo chiều ngang */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       position: relative;
       border-radius: 10px;
+
+      .my-pagination {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
     }
-  
+
     .my-img {
       width: 100%;
       height: 180px;
     }
-  
-    .my-pagination {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  
+
     .img-title {
       color: #737373;
       font-size: 1rem;
     }
   }
-  
+}
