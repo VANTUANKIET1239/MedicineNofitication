@@ -1,6 +1,6 @@
 import { toDate } from 'date-fns';
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, doc, setDoc, updateDoc,docData, getDoc,collectionData, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, doc, setDoc, updateDoc,docData, getDoc,collectionData, query, where, getDocs, deleteDoc, orderBy } from '@angular/fire/firestore';
 import { Prescription } from 'src/app/models/prescription';
 import { Observable, from } from 'rxjs';
 import { IPrescription } from 'src/app/Interfaces/Imedicine/IPrescription';
@@ -134,7 +134,24 @@ async Prescription_Detail_ById(prescriptionId:string):Promise<PrescriptionDetail
     return new PrescriptionDetail(x.id, data['prescriptionId'], data['medicineName'], data['quantityPerDose'], data['isDone']);
 });
 }
-
+async Prescription_Del(id:string,idDTs:string[]){
+    try{
+      const prescriptionCollectionRef = doc(this.firestore,`Prescription/${id}`);
+        await deleteDoc(prescriptionCollectionRef);
+        idDTs.forEach(async x => {
+            await this.Prescription_Detail_Del(x);
+        });
+        return true;
+    }
+    catch(e:any){
+        console.log(e.message);
+        return false;
+    }
+}
+async Prescription_Detail_Del(id:string){
+  const prescriptionCollectionRef = doc(this.firestore,`PrescriptionDetail/${id}`);
+  return await deleteDoc(prescriptionCollectionRef);
+}
 GetConverterSingle(){
   const PresConverter = {
     toFirestore: (pres:any) => {
@@ -158,4 +175,28 @@ GetConverterSingle(){
   };
   return PresConverter;
 }
+  async Prescription_Detail_Confirm(id:string,isDone:string){
+      console.log("upd_detail" + id);
+      const prescriptionCollectionRefDT = doc(this.firestore, `PrescriptionDetail/${id}`);
+      var item = {
+        isDone: isDone,
+    };
+    await updateDoc(prescriptionCollectionRefDT, item);
+
+  }
+  async Prescription_Search(presriptionName?:string): Promise<Prescription[]>{
+      const prescriptionCollectionRef = collection(this.firestore,`Prescription`);
+      const queryData = query(prescriptionCollectionRef,orderBy('fromDate', 'desc'));
+      const allData = await getDocs(queryData);
+
+      var list: Prescription[] = []
+      allData.docs.forEach( async(x) => {
+          let data = x.data();
+          if((data['prescriptionName'] as string).toLowerCase().includes((presriptionName || '').toLowerCase()) || presriptionName == '' || presriptionName == null || presriptionName == undefined){
+            var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);
+            list.push( new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],dataDT));
+          }
+    });
+    return Promise.resolve(list);
+  }
 }

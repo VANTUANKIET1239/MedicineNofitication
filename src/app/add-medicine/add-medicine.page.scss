@@ -91,3 +91,12 @@ ion-modal {
     margin-bottom: 8px;
 
 }
+.user-info{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #A9A9A9;
+  padding: 10px;
+  border-radius: 15px;
+}

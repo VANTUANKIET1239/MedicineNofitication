@@ -39,8 +39,8 @@ export class Prescription {
     this._prescriptionDetails = prescriptionDetails ? prescriptionDetails : [];
   }
 
-  get prescriptionId(): string | undefined {
-    return this._prescriptionId;
+  get prescriptionId(): string {
+    return this._prescriptionId ?? "";
   }
 
   set prescriptionId(value: string | undefined) {
