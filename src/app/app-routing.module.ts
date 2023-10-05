@@ -23,7 +23,11 @@ const routes: Routes = [
   {
     path: 'detail-news',
     loadChildren: () => import('./detail-news/detail-news.module').then( m => m.DetailNewsPageModule)
+  },  {
+    path: 'news',
+    loadChildren: () => import('./news/news.module').then( m => m.NewsPageModule)
   },
+
 
 
   // add-medicine

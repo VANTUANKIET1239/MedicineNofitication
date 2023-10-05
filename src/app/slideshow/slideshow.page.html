@@ -1,27 +1,28 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Slideshow</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content class="news" [fullscreen]="true" class="ion-padding">
+  <h1>Tin Tức
+    <a href="/main/tab2" class="view-all">Xem tất cả</a>
+  </h1>
   <Swiper-container class="swiper-container"
     [slidesPerView]="1"
     [spaceBetween]="10"
     [centeredSlides]="true"
     [loop]="true"
     [pagination]="true"
-    [autoplay]="5000">
+    [autoplay]="{
+      delay: 4000,
+      disableOnInteraction: false 
+    }">
     <swiper-slide *ngFor="let mem of ListNews">
       <div class="my-card-container">
-        <a [routerLink]="['/detail-news', mem.id]" class="my-card">
+        <a *ngIf="mem?.id" (click)="viewDetail(mem?.id || '')" class="my-card">
           <ion-card class="my-card">
             <ion-card-header class="img-title">
               <ion-card-title>{{ mem?.title }}</ion-card-title>
             </ion-card-header>
+            <a (click)="viewDetail(mem?.id || '')" class="view-more">Xem thêm</a>
             <ion-img [src]="mem?.img" class="my-img"></ion-img>
           </ion-card>
-        </a>
+        </a> 
       </div>
     </swiper-slide>
   </Swiper-container>

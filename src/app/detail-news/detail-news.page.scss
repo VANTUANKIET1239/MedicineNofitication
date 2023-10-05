@@ -1,18 +1,19 @@
 .my-card {
-  max-width: 320px;
-  margin: 0 auto; /* Căn giữa theo chiều ngang */
+  max-width: 95%;
+  margin: 0 auto; 
   display: flex;
-  flex-direction: column; /* Hiển thị nội dung theo chiều dọc */
-  align-items: center; /* Căn giữa theo chiều ngang */
+  flex-direction: column; 
+  align-items: center; 
   border-radius: 10px;
 
   ion-card-title {
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+    margin-bottom: 10px;
   }
+  
 
   ion-card-content {
     font-size: 18px;
@@ -31,12 +32,16 @@
     }
   }
 
-  ion-button {
-    font-size: 24px;
-    --background: none;
-    --border: none;
-    --color: #531f1f;
-    margin-top: 10px; /* Khoảng cách phía trên nút */
+  ion-buttons[slot="end"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    span.like-count {
+      font-size: 12px;
+      font-weight: bold;
+      color: #ff0000;
+    }
   }
 
   ion-icon[name="heart"] {

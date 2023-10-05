@@ -1,0 +1,16 @@
+<ion-content class="news" [fullscreen]="true" class="ion-padding">
+  <h1>Tin Tức
+  </h1>
+  <div class="news-container">
+    <ion-card class="my-card" *ngFor="let mem of ListNews">
+      <ion-card-header class="img-title">
+        <ion-card-title>{{ mem.title }}</ion-card-title>
+      </ion-card-header>
+      <ion-img [src]="mem.img" class="my-img"></ion-img>
+      <ion-card-content *ngIf="mem && mem.detail">
+        {{ truncateText(mem.detail, 30) }}
+        <a (click)="viewDetail(mem?.id|| '')">Xem thêm</a>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

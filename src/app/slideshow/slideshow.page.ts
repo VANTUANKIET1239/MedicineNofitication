@@ -4,6 +4,9 @@ import { Swiper } from 'swiper/types';
 import { NewsServiceService } from '../Services/news-service/news-service.service';
 import { from } from 'rxjs';
 import { News } from '../models/news';
+import { NavigationExtras, Router } from '@angular/router';
+import { LoadingController, NavController } from '@ionic/angular';
+
 
 register();
 
@@ -18,18 +21,39 @@ export class SlideshowPage implements OnInit {
   swiper?=Swiper;
   ListNews:News[] = [];
 
-
-  
-  
-
   constructor(
-    private temp:NewsServiceService
+    private temp:NewsServiceService,
+    private router: Router,
+    private navCtrl: NavController,
   ) {
     
   }
 
   swiperReady() {
     this.swiper=this.swiperRef?.nativeElement.swiper;
+  }
+
+  viewDetail(id: string) {
+    if(id == ''){
+      //this.ShowNofitication('Có lỗi xảy ra, vui lòng thử lại sau');
+      return;
+  }
+    let paras:any = {
+        id: id
+    }
+    this.NavigateToPage('/detail-news',paras)
+  }
+  NavigateToPage(url:string, paras?:any){
+    if(paras){
+      console.log(paras);
+      const navigationExtras: NavigationExtras = {
+        queryParams: paras
+      };
+      this.navCtrl.navigateForward(url,navigationExtras);
+    }
+    else{
+      this.navCtrl.navigateForward(url);
+    }
   }
 
 
