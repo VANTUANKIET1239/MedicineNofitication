@@ -1,0 +1,51 @@
+.my-card {
+  max-width: 95%;
+  margin: 0 auto; 
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  border-radius: 10px;
+
+  ion-card-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+
+  ion-card-content {
+    font-size: 18px;
+    color: #666;
+    text-align: justify; /* Căn đều văn bản */
+  }
+
+  ion-buttons[slot="end"] {
+    display: flex;
+    align-items: center;
+
+    span.like-count {
+      font-size: 12px;
+      font-weight: bold;
+      color: #ff0000;
+    }
+  }
+
+  ion-buttons[slot="end"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    span.like-count {
+      font-size: 12px;
+      font-weight: bold;
+      color: #ff0000;
+    }
+  }
+
+  ion-icon[name="heart"] {
+    font-size: 32px;
+    margin-right: 4px;
+  }
+}

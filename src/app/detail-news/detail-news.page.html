@@ -1,0 +1,30 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Chi tiết tin tức</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Sử dụng ngIf để kiểm tra xem có dữ liệu tin tức chi tiết hay không -->
+  <div *ngIf="newsDetail">
+    <ion-card class="my-card">
+      <ion-card-header class="img-title">
+        <ion-card-title>{{ newsDetail.title }}</ion-card-title>
+      </ion-card-header>
+      <ion-img [src]="newsDetail.img" class="my-img"></ion-img>
+      <ion-card-content>
+        <!-- Thêm nút "Tym" và số lượt thích -->
+        <ion-buttons slot="end" (click)="likeNews()">
+          <ion-button>
+            <ion-icon name="heart" [color]="isLiked ? 'danger' : 'primary'"></ion-icon>
+            <span class="like-count">{{ newsDetail.like }} người thích tin này!</span>
+          </ion-button>
+        </ion-buttons>
+        {{ newsDetail.detail }}
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

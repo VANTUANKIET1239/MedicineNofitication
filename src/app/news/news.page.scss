@@ -1,0 +1,82 @@
+.ion-padding {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin: 0;
+      flex-grow: 1;
+  
+      .view-all {
+        margin-left: 100px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1rem;
+        text-decoration: underline;
+      }
+  
+      .view-all:hover {
+        color: #5c20e9;
+      }
+    }
+  }
+  
+  .my-card-container {
+    color: rgb(184, 233, 233);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  
+    .my-card {
+      width: 90%;
+      max-width: 360px;
+      height: 270px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      position: relative;
+      border-radius: 10px;
+      padding: 4px 0;
+  
+      .view-more {
+        margin-right: auto;
+        padding-left: 20px;
+        color: #277dd8;
+        text-decoration: none;
+        font-size: 0.8rem;
+        padding-bottom: 4px;
+        text-decoration: underline;
+        align-self: flex-end;
+      }
+  
+      .my-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+  
+      .img-title {
+        color: #737373;
+        font-size: 1rem !important;
+      }
+  
+      .my-pagination {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 4px 0;
+        order: -1;
+      }
+    }
+  }
+  
