@@ -1,3 +1,4 @@
+import { GoogleCalendarService } from './../Services/GoogleCalendarService/google-calendar.service';
 import { MedicineServiceService } from '../Services/medicine-service/MedicineService.service';
 import { AfterViewInit, Component, DoCheck, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -19,6 +20,8 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   //@ViewChild('modal', { static: true }) modalContent!:IonModal;
 
   isModalOpen:boolean = false;
+  modalStates: { [key: string]: boolean } = {};
+  isUong: boolean = false;
   public alertButtonsMedipop = [
     {
       text: 'Hủy',
@@ -38,7 +41,8 @@ export class Tab1Page extends ComponentBase implements  OnInit{
               private MedicineService:MedicineServiceService,
               private readonly loadingCtrl: LoadingController,
               private modalController: ModalController,
-              private alertController: AlertController
+              private alertController: AlertController,
+              private GoogleCalendarService: GoogleCalendarService
               ) {
                 super();
     this.prescriptionForm = this.formBuilder.group({
@@ -51,14 +55,21 @@ export class Tab1Page extends ComponentBase implements  OnInit{
     });
   }
 
-  AlertUseMedicineYes(){
 
+  // Function to close a specific modal
+  async closeModal() {
+    const modal = await this.modalController.getTop();
+    if(modal){
+      modal.dismiss().then(x => {
+        if(this.isUong){
+          this.InitMedicineList();
+          this.isUong = false;
+        }
+      });
+    }
   }
   ngOnInit(): void {
     //this.InitMedicineList();
-    from(this.MedicineService.Prescription_ById('C80lba7sW3hIW1lLy6KV')).subscribe(x => {
-          console.log(x);
-    });
   }
   async InitMedicineList(){
     const loading = await this.loadingCtrl.create();
@@ -78,6 +89,14 @@ export class Tab1Page extends ComponentBase implements  OnInit{
             return x.prescriptionDetailId ?? "";
         });
         await loading.present();
+        // xóa lịch nhắc khỏi gg
+        var presItem = await this.MedicineService.Prescription_ById(pres.prescriptionId);
+        console.log(presItem.eventIds);
+        if(presItem.eventIds){
+            presItem.eventIds.forEach(async x => {
+              await this.GoogleCalendarService.DeleteEvent(x);
+            });
+        }
         if(await this.MedicineService.Prescription_Del(pres.prescriptionId,IdDTs)){
             this.ShowNofitication("Xóa đơn thuốc thành công");
         }
@@ -86,12 +105,12 @@ export class Tab1Page extends ComponentBase implements  OnInit{
         this.ionViewWillEnter();
   }
   async ionViewWillEnter(){
-    //this.InitMedicineList();
     const loading = await this.loadingCtrl.create();
     await loading.present();
     this.handleInputSearch();
+    this.modalStates = {};
     await loading.dismiss();
-    this.isModalOpen = false;
+
   }
   addItem(){
 
@@ -129,13 +148,6 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   MedicineConfirmation(){
 
   }
-  // async  OpenConfirmPop(){
-  //   const modal = await this.modalController.create({
-  //     component: MedicineConfirmPopupComponent,
-  //     cssClass: 'my-custom-modal-css',
-  //   });
-  //   await modal.present();
-  // }
   async presentAlert(id: string = '') {
     const alert = await this.alertController.create({
       header: 'Xác nhận sử dụng ?',
@@ -149,9 +161,11 @@ export class Tab1Page extends ComponentBase implements  OnInit{
           cssClass: 'alert-button-confirm',
           handler: async () => {
               this.MedicineService.Prescription_Detail_Confirm(id,'1');
-              await this.InitMedicineList();
+              //await this.InitMedicineList();
               await this.dismissAlert();
-              await this.reloadModal();
+              //await this.reloadModal(id);
+              this.modalStates[id] = true;
+              this.isUong = true;
               this.ShowNofitication("Đã ghi nhận thuốc uống thành công");
           }
         },
@@ -166,17 +180,6 @@ export class Tab1Page extends ComponentBase implements  OnInit{
       await alert.dismiss();
     }
   }
-  async reloadModal() {
-    const modal = await this.modalController.getTop();
-    if (modal) {
-      await modal.dismiss();
-    }
-    this.isModalOpen = !this.isModalOpen;
-  }
-  //  async presentModal() {
-
-  //   this.isModalOpen = !this.isModalOpen;
-  // }
   async handleInputSearch(event?:any){
     if(event){
       var inputSearch = event.target.value;
@@ -187,4 +190,21 @@ export class Tab1Page extends ComponentBase implements  OnInit{
      });
 
   }
+  ionModalWillDismiss(){
+
+  }
+  buttonXClicked(){
+
+  }
+  // async doRefresh(event:any){
+
+  //     // Complete the refresh action\
+  //   const loading = await this.loadingCtrl.create();
+  //   await loading.present();
+  //   this.handleInputSearch();
+  //   await loading.dismiss();
+
+  //   event.target.complete();
+
+  // }
 }

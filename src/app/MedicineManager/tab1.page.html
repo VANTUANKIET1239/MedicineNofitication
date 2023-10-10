@@ -7,13 +7,14 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
+
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ion-segment [(ngModel)]="selectedSegment">
+  <!-- <ion-segment [(ngModel)]="selectedSegment">
     <ion-segment-button value="button1" (click)="selectButton('button1')"
       [ngClass]="{'selected': selectedSegment === 'button1'}">
       Đơn thuóc
@@ -22,7 +23,7 @@
       [ngClass]="{'selected': selectedSegment === 'button2'}">
       Thuốc lẻ
     </ion-segment-button>
-  </ion-segment>
+  </ion-segment> -->
   <div>
     <ion-searchbar show-clear-button="always" clear-icon="trash-bin"(ionInput)="handleInputSearch($event)" ></ion-searchbar>
   </div>
@@ -31,7 +32,7 @@
     <ion-card class="ion-margin-bottom" style="padding: 10px;background-color: #afccff;">
       <ion-card-header class="card-head">
         <div>
-          <ion-card-title>{{item.prescriptionName || 'None' | TransformText:20}}</ion-card-title>
+          <ion-card-title>{{item.prescriptionName || 'None' | TransformText:15}}</ion-card-title>
           <ion-card-subtitle>{{item.doctorName || 'None' | TransformText:20}}</ion-card-subtitle>
         </div>
         <div>
@@ -69,15 +70,15 @@
 
       </ion-card-content>
       <div class="btn-group">
-        <ion-button   id="open-modal{{item.prescriptionId}}" color="secondary">Ghi nhận</ion-button>
-        <!-- modal thuốc popup -->
-        <ion-modal #modal trigger="open-modal{{item.prescriptionId}}" [isOpen]="isModalOpen">
+        <ion-button   id="open-modal{{item.prescriptionId}}"  color="secondary">Ghi nhận</ion-button>
+        <!-- modal thuốc popup trigger="open-modal{{item.prescriptionId}}" [isOpen]="modalStates[item.prescriptionId]" closeModal(item.prescriptionId)-->
+        <ion-modal #modal  trigger="open-modal{{item.prescriptionId}}">
           <ng-template #modalContent>
             <ion-content class="custom-content">
               <ion-toolbar>
                 <ion-title style="color: black;">Danh sách thuốc</ion-title>
                 <ion-buttons slot="end">
-                  <ion-button color="light" (click)="modal.dismiss()"><ion-icon name="close-outline"
+                  <ion-button color="light" (click)="closeModal()"><ion-icon name="close-outline"
                       size="large"></ion-icon></ion-button>
                 </ion-buttons>
               </ion-toolbar>
@@ -94,11 +95,11 @@
                       <div class="btn-medicine-pop">
                         <ion-button
                             (click)="presentAlert(medipop.prescriptionDetailId)" id="present-alert"
-                            color="{{medipop.isDone === '1' ? 'medium' : 'success'}}"
-                            [disabled]="medipop.isDone === '1' ? true : false"
+                            color="{{medipop.isDone === '1' || modalStates[medipop.prescriptionDetailId || ''] ? 'medium' : 'success'}}"
+                            [disabled]="medipop.isDone === '1' || modalStates[medipop.prescriptionDetailId || ''] ? true : false"
                             >
-                          <ion-icon  trigger="present-alert" slot="start" name="{{medipop.isDone === '1' ? 'checkmark-outline' : 'ellipse-outline'}}"></ion-icon>
-                          {{ medipop.isDone === '1' ? 'Đã uống' : 'Uống'}}
+                          <ion-icon  trigger="present-alert" slot="start" name="{{medipop.isDone  === '1' || modalStates[medipop.prescriptionDetailId || '']  ? 'checkmark-outline' : 'ellipse-outline'}}"></ion-icon>
+                          {{ medipop.isDone === '1'  || modalStates[medipop.prescriptionDetailId || ''] ? 'Đã uống' : 'Uống'}}
                         </ion-button>
                         <ion-alert class="custom-alert"></ion-alert>
                       </div>

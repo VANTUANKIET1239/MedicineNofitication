@@ -12,6 +12,11 @@
       <ion-title size="large">Tab 1</ion-title>
     </ion-toolbar>
   </ion-header>
+  <div class="back-btn">
+    <ion-button  (click)="goBack()" fill="clear" class="back-button">
+      <ion-icon slot="start" name="chevron-back-outline"></ion-icon> Trở về
+    </ion-button>
+  </div>
   <ion-row class="ion-align-items-center ion-justify-content-center ion-margin-top">
     <ion-col size="12">
       <div class="image-container ion-text-center">
@@ -81,11 +86,11 @@
                     </ion-avatar>
                   </div>
                   <div>
-                    <h5>{{ googleUser.displayName }}</h5>
-                  <p>{{ googleUser.email }}</p>
+                    <p style="font-weight: 16px;font-weight: bold;">{{ googleUser.displayName }}</p>
+                    <p>{{ googleUser.email }}</p>
                   </div>
-                  <div style="margin-left: 10px;">
-                    <ion-button color="secondary" (click) = "LogoutGoogle()">Đăng xuất</ion-button>
+                  <div style="margin-left: 10px; width: 100%;">
+                    <ion-button color="secondary" expand="full" (click) = "LogoutGoogle()">Đăng xuất</ion-button>
                   </div>
                 </div>
 

@@ -1,19 +1,21 @@
 import { toDate } from 'date-fns';
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, doc, setDoc, updateDoc,docData, getDoc,collectionData, query, where, getDocs, deleteDoc, orderBy } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, doc, setDoc, updateDoc,docData, getDoc,collectionData, query, where, getDocs, deleteDoc, orderBy, arrayUnion } from '@angular/fire/firestore';
 import { Prescription } from 'src/app/models/prescription';
 import { Observable, from } from 'rxjs';
 import { IPrescription } from 'src/app/Interfaces/Imedicine/IPrescription';
 import { PrescriptionDetail } from 'src/app/models/prescriptionDetail';
 import { Validators } from '@angular/forms';
-
+import { GoogleCalendarService } from '../GoogleCalendarService/google-calendar.service';
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MedicineServiceService {
 
-constructor(private readonly firestore: Firestore) {
+constructor(private readonly firestore: Firestore
+  ) {
 
  }
  async Prescription_Add(model:Prescription):Promise<boolean>{
@@ -30,11 +32,18 @@ constructor(private readonly firestore: Firestore) {
       isAllDate:model.isAllDate,
       userId:model.userId,
       time:model.time,
+      eventIds: []
     };
     try{
       console.log(prescriptionData);
     const newDocRef = await addDoc(prescriptionCollectionRef, prescriptionData);
     console.log(newDocRef.id);
+    //localStorage.setItem("presId",newDocRef.id);
+    await Preferences.set({
+      key:'presId',
+      value: newDocRef.id
+    });
+
     if(model.prescriptionDetails){
         model.prescriptionDetails.forEach(x => {
           this.Prescription_Detail_Add(x,newDocRef.id);
@@ -120,7 +129,7 @@ async Prescription_List():Promise<Prescription[]>{
     const result =  allData.docs.map( async(x) => {
         let data = x.data();
         var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);
-      return new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],dataDT);
+      return new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT);
   });
   var finalResult = Promise.all(result);
   return finalResult;
@@ -165,12 +174,13 @@ GetConverterSingle(){
                 isAllDate:pres.isAllDate,
                 userId:pres.userId,
                 time:pres.time,
+                eventIds: pres.eventIds
             };
     },
     fromFirestore: async (snapshot:any, options:any) => {
         const data = snapshot.data(options);
         var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(snapshot.id);
-        return new Prescription(snapshot.id, data.prescriptionName, data.doctorName, data.isComplete, data.medicineStoreName, data.fromDate, data.toDate, data.isAllDate, data.userId,data.time,dataDT);
+        return new Prescription(snapshot.id, data.prescriptionName, data.doctorName, data.isComplete, data.medicineStoreName, data.fromDate, data.toDate, data.isAllDate, data.userId,data.time,data.eventIds,dataDT);
     }
   };
   return PresConverter;
@@ -194,9 +204,17 @@ GetConverterSingle(){
           let data = x.data();
           if((data['prescriptionName'] as string).toLowerCase().includes((presriptionName || '').toLowerCase()) || presriptionName == '' || presriptionName == null || presriptionName == undefined){
             var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);
-            list.push( new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],dataDT));
+            list.push( new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT));
           }
     });
     return Promise.resolve(list);
+  }
+  async CalendarEvent_AddNewId(eventIds:string[], presId: string){
+    console.log("id pres: " + presId);
+    const prescriptionCollectionRef = collection(this.firestore, `Prescription`);
+    const prescriptionDocRef = doc(prescriptionCollectionRef,presId);
+    await setDoc(prescriptionDocRef, {
+      eventIds: eventIds,
+   },{merge:true});
   }
 }

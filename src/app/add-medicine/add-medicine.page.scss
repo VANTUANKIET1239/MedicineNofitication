@@ -93,10 +93,20 @@ ion-modal {
 }
 .user-info{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #A9A9A9;
   padding: 10px;
   border-radius: 15px;
+}
+.back-btn{
+    display: flex;
+    width: 100%;
+    justify-content: start;
+    margin: 10px;
+}
+.back-btn ion-button{
+  font-weight: bold;
+  font-size: 15px;
 }

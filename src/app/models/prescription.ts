@@ -11,6 +11,7 @@ export class Prescription {
   private _isAllDate!: boolean | undefined;
   private _userId!: string | undefined;
   private _time: string[] | undefined;
+  private _eventIds: string[] | undefined;
   private _prescriptionDetails!: PrescriptionDetail[];
 
   constructor(
@@ -24,6 +25,7 @@ export class Prescription {
     isAllDate?: boolean,
     userId?: string,
     time?: string[],
+    eventIds?:string[],
     prescriptionDetails? :PrescriptionDetail[]
   ) {
     this._prescriptionId = prescriptionId;
@@ -36,6 +38,7 @@ export class Prescription {
     this._isAllDate = isAllDate;
     this._userId = userId;
     this._time = time ? time : [];
+    this._eventIds = eventIds ? eventIds : [];
     this._prescriptionDetails = prescriptionDetails ? prescriptionDetails : [];
   }
 
@@ -117,6 +120,13 @@ export class Prescription {
 
   set time(value: string[] | undefined) {
     this._time = value;
+  }
+  get eventIds(): string[] | undefined {
+    return this._eventIds;
+  }
+
+  set eventIds(value: string[] | undefined) {
+    this._eventIds = value;
   }
   set prescriptionDetails(value:PrescriptionDetail[]){
       this._prescriptionDetails = value;
