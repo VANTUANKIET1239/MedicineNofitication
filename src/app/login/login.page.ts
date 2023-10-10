@@ -6,10 +6,11 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Toast } from '@capacitor/toast';
 import { GoogleCalendarService } from '../Services/GoogleCalendarService/google-calendar.service';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { isPlatform } from '@ionic/angular';
+import { LoadingController, isPlatform } from '@ionic/angular';
 import { GoogleFirebaseAuthService } from '../Services/google-firebase-auth/google-firebase-auth.service';
 import { NavController } from '@ionic/angular';
 import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
+import { Prescription } from '../models/prescription';
 //const app = initializeApp(environment.firebase);
 // const app = initializeApp({
 //   apiKey: "AIzaSyB59ZKtqB6hIaTgVby5u0bYbaW38-xku-w",
@@ -40,29 +41,13 @@ export class LoginPage extends ComponentBase implements OnInit {
   user$ =this.auth.currentUser;
   constructor(private route:Router,
               private navCtrl: NavController,
-              private routeAct: ActivatedRoute
-              // private googleCalendarService: GoogleCalendarService,
-              // private googleAuth:GoogleFirebaseAuthService
+              private routeAct: ActivatedRoute,
+               private googleCalendarService: GoogleCalendarService,
+               private googleAuth:GoogleFirebaseAuthService,
+               private readonly loadingCtrl: LoadingController,
     ) {
         super();
    }
-  //  async Login(){
-  //     await this.googleAuth.signIn();
-  //  }
-
-  //  async Logout(){
-  //     await this.googleAuth.signOut();
-  //  }
-  //  async Refresh(){
-  //     await this.googleAuth.refresh();
-  //  }
-  //  async CreateCalendarEvent(){
-  //     var result = await this.googleCalendarService.insertEvent();
-  //     if(result){
-  //         this.ShowNofitication("OK");
-  //     }
-  //     else this.ShowNofitication("NO");
-  //  }
 
   ngOnInit() {
       this.onInitAuth();
@@ -83,7 +68,7 @@ export class LoginPage extends ComponentBase implements OnInit {
       });
 
   }
-  GetOTP(){
+  async GetOTP(){
 
         try{
           var phoneNum:string = this.phoneNumber.toString() ?? "";
@@ -95,11 +80,14 @@ export class LoginPage extends ComponentBase implements OnInit {
             this.ShowNofitication('Số điện thoại bạn nhập chưa đúng');
           }
           else{
+             const loading = await this.loadingCtrl.create();
               phoneNum = "+1" + phoneNum;
               this.reCapchaVerifier = new RecaptchaVerifier('sign-in-button',{size:'invisible'},this.auth);
+              await loading.present();
               signInWithPhoneNumber(this.auth,phoneNum, this.reCapchaVerifier).then(confirmationResult => {
               this.otpcomfirmationResult = confirmationResult;
               this.isLogin = !this.isLogin;
+              loading.dismiss();
             }).catch((error) => {
               setTimeout(() => {
                 window.location.reload;
@@ -140,8 +128,8 @@ export class LoginPage extends ComponentBase implements OnInit {
             if(result.user){
               console.log(result);
                 let phone = result.user.phoneNumber || '';
-                localStorage.setItem("phoneNumber",phone);
-          //     localStorage.setItem("accessToken",result.user);
+                //localStorage.setItem("phoneNumber",phone);
+                //localStorage.setItem("accessToken",result.user);
               this.navCtrl.navigateRoot('/main');
             }
         })

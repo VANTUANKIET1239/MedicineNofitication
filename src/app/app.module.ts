@@ -21,6 +21,7 @@ import { TimeDisplayPipe } from './Pipes/TimeDisplay.pipe';
 import { PipesModule } from './Pipes/pipes.module';
 import { ComponentBase } from './shared/ComponentBase/ComponentBase';
 
+
 defineCustomElements(window);
 // const app = initializeApp({
 //   apiKey: "AIzaSyB59ZKtqB6hIaTgVby5u0bYbaW38-xku-w",

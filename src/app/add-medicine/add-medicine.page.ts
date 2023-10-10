@@ -1,17 +1,21 @@
+import { GoogleCalendarService } from './../Services/GoogleCalendarService/google-calendar.service';
 import { async } from '@angular/core/testing';
 import { PrescriptionDetail } from './../models/prescriptionDetail';
 
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ModalController } from '@ionic/angular';
+import { LoadingController, ModalController, NavController } from '@ionic/angular';
 import { format, getDate, parseISO, toDate } from 'date-fns';
 import { Prescription } from '../models/prescription';
 import { Toast } from '@capacitor/toast';
 import { MedicineServiceService } from '../Services/medicine-service/MedicineService.service';
 import { Auth } from '@angular/fire/auth';
-import { from } from 'rxjs';
+import { flatMap, from } from 'rxjs';
 import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { GoogleFirebaseAuthService } from '../Services/google-firebase-auth/google-firebase-auth.service';
+import { GoogleUser } from '../models/GoogleUser';
+import { Preferences } from '@capacitor/preferences';
 
 // import { MedicineServiceService } from '../Services/medicine-service/MedicineService.service';
 
@@ -26,19 +30,26 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
   model:Prescription = new Prescription();
   private auth:Auth = inject(Auth);
   user$ =this.auth.currentUser;
-
+  isAllDate: boolean = true;
+  googleLogin: boolean = false;
+  disableGG: boolean = false;
+  googleUser :GoogleUser = new GoogleUser();
   constructor(private formBuilder: FormBuilder,
     private modalController: ModalController,
     private readonly loadingCtrl: LoadingController,
     private MedicineService: MedicineServiceService,
-    private routeAct: ActivatedRoute
+    private routeAct: ActivatedRoute,
+    private GoogleCalendarService: GoogleCalendarService,
+    private GoogleAuthService: GoogleFirebaseAuthService,
+    private route: Router,
+    private navCtrl: NavController,
       ) {
     super();
     this.prescriptionForm = this.formBuilder.group({
       prescriptionName: ['', Validators.required],
       doctorName: ['', Validators.required],
       medicineStoreName: ['', Validators.required],
-      isAllDate: [true],
+      isAllDate: [false],
       fromDate: [new Date().toISOString()],
       toDate: [new Date().toISOString()],
       pickTime: [new Date().toISOString()],
@@ -49,11 +60,13 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
     return this.prescriptionForm.get('medicineArrays') as FormArray;
   }
   ngOnInit(): void {
-   // console.log(this.user$);
-      // const k = from(this.MedicineService.Prescription_List());
-      // k.subscribe(x => {
-      //     console.log(x);
-      // });
+    console.log(this.GoogleCalendarService.calculateDateDifference(new Date('2023-12-28T09:00:00-07:00'), new Date('2023-12-29T17:00:00-07:00')));
+
+     Preferences.get({key: 'ggtoken'}).then(x => {
+      if(x.value){
+        this.disableGG = true;
+        this.CheckGoogleLogin();
+      }
       this.routeAct.queryParams.subscribe( async (params) => {
            let id =  params['id'];
            if(id){
@@ -61,16 +74,31 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
             this.PatchValueModel(this.model);
            }
      });
+    })
+  }
+   CheckGoogleLogin(){
+    if(this.disableGG){
+      console.log(this.disableGG);
+      var result = this.GoogleCalendarService.CheckLogin();
+      console.log(result);
+      if(result){
+        this.googleUser = result ?? new GoogleUser();
+        this.googleLogin = false;
+      }
+    }
   }
   PatchValueModel(model:Prescription){
     const arr = this.medicineArrays;
+    arr.clear();
     if(Array.isArray(model.prescriptionDetails)){
-      console.log(model.prescriptionDetails);
+      console.log(arr);
       model.prescriptionDetails.forEach(x => {
         const medicineGroup = this.formBuilder.group({
           prescriptionDetailId: [x.prescriptionDetailId],
+          prescriptionId: [x.prescriptionId],
           medicine: [x.medicineName, Validators.required],
-          quantity: [x.quantityPerDose,[Validators.required,Validators.maxLength(2)]]
+          quantity: [x.quantityPerDose,[Validators.required,Validators.maxLength(2)]],
+          isDone: x.isDone
         });
         arr.push(medicineGroup)
     });
@@ -84,12 +112,45 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
       });
     }
   }
-  // ValidateAlert(){
-  //   if(this.medicineArrays.controls.some(x => x.get('medicine')?.hasError('required') || this.medicineArrays.controls.some(x => x.get('quantity')?.hasError('required')))){
-  //         this.ShowNofitication('Thông tin thuốc cần được nhập');
-  //         return
-  //   }
-  // }
+  async LoginGoogle(){
+     this.googleUser = await this.GoogleAuthService.signIn();
+    // this.GoogleCalendarService.test();
+    // this.GoogleCalendarService.test();
+     this.googleLogin = false;
+     this.disableGG = true;
+    //  console.log(localStorage.getItem('ggtoken'));
+    //  console.log(this.GoogleCalendarService.test());
+    //await this.GoogleAuthService.refresh();
+
+  }
+  async LogoutGoogle(){
+    await this.GoogleAuthService.signOut();
+    this.disableGG = false;
+    this.googleLogin = true;
+   // this.GoogleCalendarService.insertEvent2(new Prescription());
+    //this.CheckGoogleLogin();
+    // await this.GoogleAuthService.refresh();
+    //await this.GoogleCalendarService.insertEvent();
+
+  }
+  onGGEvent(event:any){
+    var checkGG = event.detail.checked;
+    if(checkGG){
+        this.googleLogin = checkGG;
+    }
+    else{
+      this.googleLogin = checkGG;
+    }
+  }
+  onChangeAllDate(event:any){
+    var checkAllDate = event.detail.checked;
+    if(!checkAllDate){
+        this.isAllDate = !checkAllDate;
+    }
+    else{
+      this.isAllDate = !checkAllDate;
+    }
+  }
   checkInputValue(){
     var mediarrays = this.medicineArrays;
     if(mediarrays.controls.length  == 0){
@@ -128,14 +189,14 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
       var mediarrays = this.medicineArrays;
       mediarrays.controls.forEach(x => {
           let item = x.value;
-          if(!item.prescriptionDetailId){
             let modelDTitem:PrescriptionDetail = new PrescriptionDetail();
-            modelDTitem.prescriptionDetailId = item.prescriptionDetailId;
+            modelDTitem.prescriptionDetailId = item.prescriptionDetailId ? item.prescriptionDetailId : '';
             modelDTitem.medicineName = item.medicine;
+            modelDTitem.prescriptionId = item.prescriptionId;
             modelDTitem.quantityPerDose = item.quantity;
-            modelDTitem.isDone = '0';
+            modelDTitem.isDone = item.prescriptionDetailId ? item.isDone : '0';
             modelDT.push(modelDTitem);
-          }
+
       });
 
        this.model.prescriptionName = formValue.prescriptionName;
@@ -144,18 +205,32 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
        this.model.isAllDate = formValue.isAllDate;
        this.model.fromDate = formValue.fromDate;
        this.model.toDate = formValue.toDate;
-      this.model.prescriptionDetails.push(...modelDT);
+      this.model.prescriptionDetails = modelDT;
       this.model.userId = this.user$?.uid;
         await loading.present();
         var result = await this.MedicineService.Prescription_Upd(this.model);
+        // load lại model
+        this.model = await this.MedicineService.Prescription_ById(this.model.prescriptionId);
+        if(this.disableGG){
+          console.log("event upd");
+          console.log(this.model.eventIds);
+          if((this.model.eventIds?.length || [].length) > 0 || (this.model.eventIds != undefined)){
+            this.model.eventIds?.forEach(async x => {
+              await this.GoogleCalendarService.DeleteEvent(x);
+            });
+          }
+          await this.GoogleCalendarService.insertEvent(this.model, localStorage.getItem("presId") || "");
+        }
         await loading.dismiss();
        if(result){
             this.ShowNofitication("Chỉnh sửa đơn thuốc thành công");
+
        }
        else{
         this.ShowNofitication("Chỉnh sửa thuốc thất bại");
        }
     }
+
   async AddPres(){
     if(this.checkInputValue()){
       return;
@@ -183,6 +258,10 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
     this.model.userId = this.user$?.uid;
       await loading.present();
       var result = await this.MedicineService.Prescription_Add(this.model);
+      if(this.disableGG){
+        const IdNew = await Preferences.get({key: 'presId'});
+        await this.GoogleCalendarService.insertEvent(this.model,IdNew.value || "");
+      }
       await loading.dismiss();
      if(result){
           this.ShowNofitication("Thêm đơn thuốc thành công");
@@ -191,25 +270,28 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
       this.ShowNofitication("Thêm đơn thuốc thất bại");
      }
   }
-  async UpdPres(){
-
+  goBack(){
+    this.navCtrl.navigateForward('/main/tab1');
   }
   deleteItemArrays(index:number,type:string){
      if(type == 'medicine'){
       const formArray = this.medicineArrays;
-        formArray.removeAt(index);
+      formArray.removeAt(index);
      }
      else if(type == 'time'){
       this.model.time?.splice(index,1);
      }
   }
+
   addMedicine(){
     const formArray = this.prescriptionForm.get('medicineArrays') as FormArray;
 
       const medicineGroup = this.formBuilder.group({
         prescriptionDetailId: [''],
+        prescriptionId: [''],
         medicine: ['', Validators.required],
-        quantity: ['0',[Validators.required,Validators.maxLength(2)]]
+        quantity: ['0',[Validators.required,Validators.maxLength(2)]],
+        isDone: '0'
       });
       formArray.push(medicineGroup);
       console.log(formArray);
@@ -229,7 +311,6 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
       return;
     }
     this.model.addTimeItem(this.prescriptionForm.value.pickTime);
-    console.log("arrr" + this.model.time);
     this.modalController.dismiss();
   }
   checkDateTime(){
@@ -238,35 +319,14 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
     const currentDate  = new Date();
     currentDate.setDate(currentDate.getDate() - 1);
     if(FROMdate < currentDate || TOdate < currentDate){
-      console.log("1 ", FROMdate)
-      console.log("2 ",currentDate)
-      console.log(FROMdate < currentDate);
-      console.log(TOdate < currentDate);
       this.prescriptionForm.get('fromDate')?.setValue((new Date()).toISOString());
       this.prescriptionForm.get('toDate')?.setValue((new Date()).toISOString());
         this.ShowNofitication('Ngày bắt đầu và kết thúc đều phải lớn hoặc bằng ngày hiện tại');
     }
     else if(FROMdate > TOdate){
-      console.log(TOdate);
       this.prescriptionForm.get('fromDate')?.setValue((new Date()).toISOString());
       this.ShowNofitication('Ngày bắt đầu phải nhỏ hơn ngày kết thúc');
     }
-
-
   }
-// async ShowNofitication(message: string){
-//   try {
-//     await Toast.show({
-//       text: message,
-//       duration: 'short'
-//     });
-//   } catch (error) {
-//     console.error('Error displaying toast:', error);
-//   }
-// }
-
-
-
-
-
 }
+

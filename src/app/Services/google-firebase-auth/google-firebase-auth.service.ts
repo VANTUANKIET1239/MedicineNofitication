@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { isPlatform } from '@ionic/angular';
+import { GoogleUser } from 'src/app/models/GoogleUser';
+import { Preferences } from '@capacitor/preferences';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,17 +13,27 @@ constructor() {
         GoogleAuth.initialize();
     }
 }
-  async signIn(){
+  async signIn(): Promise<GoogleUser>{
     var user = await GoogleAuth.signIn();
-    console.log(user);
-    localStorage.setItem("ggtoken",user.authentication.accessToken);
+    await Preferences.set({
+      key: 'ggtoken',
+      value: user.authentication.accessToken
+    });
+    var userS = new GoogleUser(user.name,user.email,user.imageUrl, user.id);
+    await Preferences.set({
+      key: 'User',
+      value: JSON.stringify(userS)
+    });
+    return userS;
   }
   async signOut(){
     await GoogleAuth.signOut();
-    localStorage.removeItem('ggtoken');
+    //localStorage.removeItem("ggtoken");
+    await Preferences.remove({key: 'ggtoken'});
   }
   async refresh(){
-    await GoogleAuth.refresh();
+    const kiet = await GoogleAuth.refresh();
+    console.log(kiet);
   }
 }
 
