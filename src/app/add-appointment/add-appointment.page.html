@@ -1,0 +1,80 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start" >
+      <ion-icon name="arrow-back-outline" (click)="closeModal()" style="width: 40px;"></ion-icon>
+      <!-- <ion-back-button text="Previous" icon="caret-back"></ion-back-button> -->
+    </ion-buttons>
+    <ion-title>
+      <h1 style="margin-right: 40px;">Đặt lịch khám</h1>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="appointmentForm">
+    <ion-list>
+      <ion-item>
+        <ion-label class="label" position="stacked">Tên</ion-label>
+        <ion-input
+          formControlName="name"
+          type="text"
+          placeholder="Nhập tên"
+        ></ion-input>
+        <div *ngIf="nameError" class="error-message">{{ nameError }}</div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="label" position="stacked">Địa chỉ</ion-label>
+        <ion-input
+          formControlName="address"
+          type="text"
+          placeholder="Nhập địa chỉ"
+        ></ion-input>
+        <div *ngIf="addressError" class="error-message">{{ addressError }}</div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="label" position="stacked">Số điện thoại</ion-label>
+        <ion-input
+          formControlName="phone"
+          type="tel"
+          placeholder="Nhập số điện thoại"
+        ></ion-input>
+        <div *ngIf="phoneError" class="error-message">{{ phoneError }}</div>
+      </ion-item>
+
+      <ion-item style="align-items: center">
+        <ion-label class="label" position="stacked">Ngày khám</ion-label>
+        <div style="height: 20px"></div>
+        <ion-datetime-button datetime="datetime"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              [showDefaultButtons]="true"
+              id="datetime"
+              formControlName="date"
+              displayFormat="DD/MM/YYYY HH:mm"
+              minuteValues="0,15,30,45"
+              [min]="formattedToday"
+              [max]="formattedMaxday"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <div *ngIf="dateError" class="error-message">{{ dateError }}</div>
+      </ion-item>
+
+      <ion-item >
+        <ion-label class="label" position="stacked">Khoa</ion-label>
+        <ion-select  formControlName="doctor" placeholder="Chọn khoa">
+          <div *ngFor="let doc of doctor" >
+          <ion-select-option value="{{doc}}">{{doc}}</ion-select-option></div>
+        </ion-select>
+        <div *ngIf="doctorError" class="error-message">{{ doctorError }}</div>
+      </ion-item>
+    </ion-list>
+
+    <ion-button style="display: grid;justify-content: center;" type="submit" (click)="presentActionSheet()"
+      >Xác nhận</ion-button
+    >
+  </form>
+</ion-content>

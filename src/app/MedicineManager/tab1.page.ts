@@ -1,12 +1,13 @@
 import { GoogleCalendarService } from './../Services/GoogleCalendarService/google-calendar.service';
 import { MedicineServiceService } from '../Services/medicine-service/MedicineService.service';
-import { AfterViewInit, Component, DoCheck, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DoCheck, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationExtras, Router } from '@angular/router';
 import { Prescription } from '../models/prescription';
 import { from } from 'rxjs';
 import { AlertController, IonModal, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
+import { Auth } from '@angular/fire/auth';
 
 
 @Component({
@@ -22,6 +23,9 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   isModalOpen:boolean = false;
   modalStates: { [key: string]: boolean } = {};
   isUong: boolean = false;
+
+  private auth:Auth = inject(Auth);
+  user$ =this.auth.currentUser;
   public alertButtonsMedipop = [
     {
       text: 'Hủy',
@@ -92,7 +96,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
         // xóa lịch nhắc khỏi gg
         var presItem = await this.MedicineService.Prescription_ById(pres.prescriptionId);
         console.log(presItem.eventIds);
-        if(presItem.eventIds){
+        if(presItem.eventIds && presItem.eventIds.length > 0 ){
             presItem.eventIds.forEach(async x => {
               await this.GoogleCalendarService.DeleteEvent(x);
             });
@@ -184,7 +188,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
     if(event){
       var inputSearch = event.target.value;
     }
-     from( this.MedicineService.Prescription_Search(inputSearch)).subscribe(x => {
+     from( this.MedicineService.Prescription_Search(this.user$?.uid || '',inputSearch)).subscribe(x => {
       this.ListPres = x;
       console.log(this.ListPres);
      });

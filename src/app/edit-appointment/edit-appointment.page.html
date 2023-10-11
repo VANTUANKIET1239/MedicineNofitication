@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start" >
+      <ion-icon name="arrow-back-outline" (click)="closeModal()" style="width: 40px;"></ion-icon>
+    </ion-buttons>
+    <ion-title> <h1 style="margin-right: 40px;">Sửa lịch khám</h1> </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="appointmentForm">
+    <ion-list>
+      <ion-item>
+        <ion-label class="label" position="stacked">Tên</ion-label>
+        <ion-input
+          formControlName="name"
+          type="text"
+          aria-label="Nhập tên"
+          [(ngModel)]="editApointment.name"
+        ></ion-input>
+        <div *ngIf="nameError" class="error-message">{{ nameError }}</div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="label" position="stacked">Địa chỉ</ion-label>
+        <ion-input
+          formControlName="address"
+          type="text"
+          aria-label="Nhập địa chỉ"
+          [(ngModel)]="editApointment.address"
+        ></ion-input>
+        <div *ngIf="addressError" class="error-message">{{ addressError }}</div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="label" position="stacked">Số điện thoại</ion-label>
+        <ion-input
+          formControlName="phone"
+          type="tel"
+          aria-label="Nhập số điện thoại"
+          [(ngModel)]="editApointment.phone"
+        ></ion-input>
+        <div *ngIf="phoneError" class="error-message">{{ phoneError }}</div>
+      </ion-item>
+
+      <ion-item style="align-items: center">
+        <ion-label class="label" position="stacked">Ngày khám</ion-label>
+        <div style="height: 20px"></div>
+        <ion-datetime-button datetime="datetime"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+            [showDefaultButtons]="true"
+              id="datetime"
+              formControlName="date"
+              displayFormat="DD/MM/YYYY HH:mm"
+              aria-label="Chọn ngày khám"
+              value="formattedBookday"
+              [min]="formattedToday"
+              [max]="formattedMaxday"
+              [(ngModel)]="editApointment.date"
+              minuteValues="0,15,30,45"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <div *ngIf="dateError" class="error-message">{{ dateError }}</div>
+      </ion-item>
+
+      <ion-item >
+        <ion-label class="label" position="stacked">Khoa</ion-label>
+        <ion-select  formControlName="doctor" placeholder="Chọn khoa" [(ngModel)]="editApointment.doctor">
+          <div *ngFor="let doc of doctor" >
+          <ion-select-option value="{{doc}}" >{{doc}}</ion-select-option></div>
+        </ion-select>
+        <div *ngIf="doctorError" class="error-message">{{ doctorError }}</div>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="full" type="submit" (click)="presentActionSheet()"
+      >Xác nhận</ion-button
+    >
+  </form>
+</ion-content>

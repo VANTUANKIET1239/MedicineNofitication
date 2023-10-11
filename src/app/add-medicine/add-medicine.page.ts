@@ -79,12 +79,13 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
    CheckGoogleLogin(){
     if(this.disableGG){
       console.log(this.disableGG);
-      var result = this.GoogleCalendarService.CheckLogin();
-      console.log(result);
-      if(result){
-        this.googleUser = result ?? new GoogleUser();
-        this.googleLogin = false;
-      }
+      var result = this.GoogleCalendarService.CheckLogin().then(re => {
+        console.log(re);
+          if(re){
+            this.googleUser = re ?? new GoogleUser();
+            this.googleLogin = false;
+          }
+      });
     }
   }
   PatchValueModel(model:Prescription){
@@ -219,7 +220,8 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
               await this.GoogleCalendarService.DeleteEvent(x);
             });
           }
-          await this.GoogleCalendarService.insertEvent(this.model, localStorage.getItem("presId") || "");
+          let presId = await Preferences.get({key: 'presId'})
+          await this.GoogleCalendarService.insertEvent(this.model, presId.value || "");
         }
         await loading.dismiss();
        if(result){
@@ -260,6 +262,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
       var result = await this.MedicineService.Prescription_Add(this.model);
       if(this.disableGG){
         const IdNew = await Preferences.get({key: 'presId'});
+        console.log(IdNew.value);
         await this.GoogleCalendarService.insertEvent(this.model,IdNew.value || "");
       }
       await loading.dismiss();

@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <h1 style="margin-left: 80px;">Lịch khám bệnh</h1>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button  class="add" (click)="addAppointment()">Thêm</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="list-content">
+    <ion-item *ngFor="let appointment of appointments; let i = index" [ngClass]="{'overtime': isAppointmentOvertime(appointment.date)}" >
+       <!-- {{appointment.doctor}}  -->
+       {{ formatDateTime(appointment.date)}}
+      <ion-buttons slot="end">
+        <ion-button
+          (click)="editAppointment(id[i])"
+          [disabled]="isAppointmentEdit(appointment.date)"
+        >
+          Sửa
+        </ion-button>
+        <ion-button
+          (click)="presentActionSheet(id[i])"
+        >
+          Xóa
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+

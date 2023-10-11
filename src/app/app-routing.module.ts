@@ -23,10 +23,22 @@ const routes: Routes = [
   {
     path: 'detail-news',
     loadChildren: () => import('./detail-news/detail-news.module').then( m => m.DetailNewsPageModule)
-  },  {
+  },
+  {
     path: 'news',
     loadChildren: () => import('./news/news.module').then( m => m.NewsPageModule)
+  },  {
+    path: 'add-appointment',
+    loadChildren: () => import('./add-appointment/add-appointment.module').then( m => m.AddAppointmentPageModule)
   },
+  {
+    path: 'edit-appointment',
+    loadChildren: () => import('./edit-appointment/edit-appointment.module').then( m => m.EditAppointmentPageModule)
+  },
+
+
+
+
 
 
 
