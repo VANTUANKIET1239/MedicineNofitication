@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Appointment } from '../models/Appointment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GetdataService } from '../Services/addApointment/addApointment.service';
 import { DatePipe } from '@angular/common';
 import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
+import { Auth } from '@angular/fire/auth';
+import { user } from 'rxfire/auth';
 
 @Component({
   selector: 'app-add-appointment',
@@ -22,6 +24,8 @@ export class AddAppointmentPage implements OnInit {
   formattedToday: any;
   formattedMaxday: any;
   doctor: any[] = [];
+  private auth:Auth = inject(Auth);
+  user$ =this.auth.currentUser;
 
 
   constructor(
@@ -48,6 +52,7 @@ export class AddAppointmentPage implements OnInit {
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 6);
     this.formattedMaxday = this.datePipe.transform(maxDate, 'yyyy-MM-ddTHH:mm');
+    
   }
 
   // Chỉ cho phép đặt lịch hẹn từ 8h-11h
@@ -90,6 +95,7 @@ export class AddAppointmentPage implements OnInit {
         phone: this.appointment.phone,
         date: this.appointment.date,
         doctor: this.appointment.doctor,
+        id:this.user$?.uid,
       };
       const cdate = new Date(this.appointment.date);
       let check = await this.config.checkApoint('1', cdate);
@@ -102,13 +108,13 @@ export class AddAppointmentPage implements OnInit {
           console.log(this.isAppointmentBookA(this.appointment.date));
           if (this.isAppointmentBookM(this.appointment.date))
           {
-            this.config.addApoint('1', appoinments);
+            this.config.addApoint(appoinments);
             this.closeModal();
             this.appointmentForm.reset();
           }
           else if (this.isAppointmentBookA(this.appointment.date))
           {
-            this.config.addApoint('1', appoinments);
+            this.config.addApoint(appoinments);
             this.closeModal();
             this.appointmentForm.reset();
           }

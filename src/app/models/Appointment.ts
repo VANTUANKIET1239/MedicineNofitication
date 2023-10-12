@@ -4,4 +4,5 @@ export class Appointment {
   phone!: string;
   date!: Date;
   doctor!: string;
+  id?: string;
 }

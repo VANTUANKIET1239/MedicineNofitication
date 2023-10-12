@@ -4,7 +4,6 @@ import { Firestore, collection,
         doc,
         getDoc,
         getDocs,
-        getFirestore,
         orderBy,
         query,
         setDoc,
@@ -21,16 +20,13 @@ export class GetdataService {
     private readonly firestore: Firestore
   ) {}
 
-  //db = getFirestore(initializeApp(environment.firebaseConfig));
 
   // Lấy danh sách lịch khám
   async getListApoint(uid: string, appointments: Appointment[], id: any[]) {
     //lấy data add vào mảng lịch khám và mảng id
     // uid: Lấy từ đăng nhập sms
-    const userDocRef = doc(this.firestore, 'danh sách người dùng', uid);
     try {
-      //const list = query(collection(this.db, 'danh sách lịch khám'), orderBy('date', 'desc')); // Lấy tất cả danh sách khám
-      const list = query(collection(userDocRef, "đặt lịch khám"), orderBy("date", "desc"));// Lấy danh sách theo id người dùng
+      const list = query(collection(this.firestore, 'Appointments'), orderBy('date', 'desc')); // Lấy tất cả danh sách khám
       const subcollectionSnapshot = await getDocs(list);
       appointments.splice(0, appointments.length);
       id.splice(0, id.length);
@@ -44,51 +40,28 @@ export class GetdataService {
   }
 
   // Thêm lịch khám
-  async addApoint(uid: string, appointment: Appointment) {
+  async addApoint(appointment: Appointment) {
     // add vào 2 collection danh sách người dùng và danh sách lịch khám
     const id = appointment.name + '+' + appointment.date.toString();
-    const usercollect1 = collection(this.firestore, 'danh sách lịch khám');
-    const usercollect2 = collection(
-      this.firestore,
-      'danh sách người dùng',
-      uid,
-      'đặt lịch khám'
-    );
-    const firstDocRef2 = doc(usercollect2, id);
-    //const firstDocRef1 = doc(usercollect1, id);
-    await setDoc(firstDocRef2, appointment).then(async () => {
-      // add vào danh sách người dùng thành công rồi mới add vào danh sách lịch khám
-      const firstDocRef1 = doc(usercollect1, id);
-      //const firstDocRef2 = doc(usercollect2, id);
-      await setDoc(firstDocRef1, appointment);
-    });
+    const usercollect1 = collection(this.firestore, 'Appointments');
+    const firstDocRef1 = doc(usercollect1, id);
+    await setDoc(firstDocRef1, appointment);
+  
   }
 
   // Cập nhật lịch khám
-  async updateApoint(uid: string, appointment: any, newappointment: any) {
-    //update đồng thời vào cả hai danh sách
-    const userDocRef = doc(
-      this.firestore,
-      'danh sách người dùng',
-      uid,
-      'đặt lịch khám',
-      appointment
-    );
-    const allUserDocRef = doc(this.firestore, 'danh sách lịch khám', appointment);
+  async updateApoint(appointment: any, newappointment: any) {
+    //update
+    const allUserDocRef = doc(this.firestore, 'Appointments', appointment);
     await updateDoc(allUserDocRef, newappointment);
-    //await updateDoc(userDocRef, newappointment);
-    //await updateDoc(allUserDocRef, newappointment);
   }
 
   // Check không cho phép đặt lịch chênh lệch dưới 1h so với lịch đã đặt
   async checkApoint(uid: string, date: Date) {
-    const userDocRef = doc(this.firestore, 'danh sách người dùng', uid);
+    const userDocRef = doc(this.firestore, 'Appointments', uid);
     let check = true;
     try {
-      const list = query(
-        collection(userDocRef, 'đặt lịch khám'),
-        orderBy('date', 'desc')
-      );
+      const list = query(collection(this.firestore, 'Appointments'), orderBy('date', 'desc')); 
       const subcollectionSnapshot = await getDocs(list);
       const subcollectionData = subcollectionSnapshot.docs.map((doc) =>
         doc.data()
@@ -117,11 +90,7 @@ export class GetdataService {
   }
   async GetAppoint(id:string){
     const docRef = doc(
-      this.firestore,
-      'danh sách người dùng',
-      '1',
-      'đặt lịch khám',
-      id
+      this.firestore,"Appointments",id
     );
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data())
@@ -131,14 +100,13 @@ export class GetdataService {
   // Số lịch khám tối đa có thể đặt
   async countApoint(uid: string) {
     let length = null;
-    const userDocRef = doc(this.firestore, 'danh sách người dùng', uid);
+
     try {
-      const list = query(collection(userDocRef, 'đặt lịch khám'));
+      const list = query(collection(this.firestore, 'Appointments'), orderBy('date', 'desc')); 
       const subcollectionSnapshot = await getDocs(list);
       const listApoint = [];
 
       subcollectionSnapshot.forEach((doc) => {
-        //console.log("Dữ liệu từ subcollection:", doc.id, "=>", doc.data());
         listApoint.push(doc.data());
       });
       if (listApoint.length < 10) {
@@ -150,14 +118,11 @@ export class GetdataService {
       console.error('Lỗi khi truy xuất dữ liệu:', error);
     }
     return length;
-    //console.log(appointments)
   }
 
   // Xóa ở hai danh sách
   async deleteApoint(id: any) {
-    const docRefUser = doc(this.firestore,'danh sách người dùng','1','đặt lịch khám',id);
-    const docRef = doc(this.firestore, 'danh sách lịch khám', id);
-    deleteDoc(docRefUser)
+    const docRef = doc(this.firestore, 'Appointments', id);
     deleteDoc(docRef);
   }
 
@@ -166,7 +131,7 @@ export class GetdataService {
     let check = true;
     try {
       const listduplicate = [];
-      const list = query(collection(this.firestore, 'danh sách lịch khám'));
+      const list = query(collection(this.firestore, 'Appointments'));
       const subcollectionSnapshot = await getDocs(list);
       const subcollectionData = subcollectionSnapshot.docs.map((doc) =>
         doc.data()
@@ -193,14 +158,10 @@ export class GetdataService {
   }
 
   // Check nếu sửa lịch đăng ký
-  async checkApointEdit(uid: string, id: any, date: Date) {
-    const userDocRef = doc(this.firestore, 'danh sách người dùng', uid);
+  async checkApointEdit(id: any, date: Date) {
     let check = true;
     try {
-      const list = query(
-        collection(userDocRef, 'đặt lịch khám'),
-        orderBy('date', 'desc')
-      );
+      const list = query(collection(this.firestore, 'Appointments'), orderBy('date', 'desc')); 
       const subcollectionSnapshot = await getDocs(list);
       const index = subcollectionSnapshot.docs.map((doc) => doc.id).indexOf(id);
       const subcollectionData = subcollectionSnapshot.docs.map((doc) =>
