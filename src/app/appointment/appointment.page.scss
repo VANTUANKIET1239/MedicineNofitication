@@ -1,0 +1,25 @@
+ion-item {
+  margin: 10px;
+  font: inherit;
+  font-size: medium;
+  color: black;
+}
+ion-title {
+  color: black;
+  align-items: center;
+  text-align: center;
+}
+ion-toolbar {
+  --opacity: 0.8;
+}
+
+.overtime {
+  color: rgb(255, 38, 0);
+  background-color: yellow !important;
+}
+
+.add {
+  color: black;
+  margin-top: 10px;
+  font-size: 18px;
+}

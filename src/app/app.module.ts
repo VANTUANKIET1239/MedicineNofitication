@@ -20,6 +20,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { TimeDisplayPipe } from './Pipes/TimeDisplay.pipe';
 import { PipesModule } from './Pipes/pipes.module';
 import { ComponentBase } from './shared/ComponentBase/ComponentBase';
+import { DatePipe } from '@angular/common';
 
 
 defineCustomElements(window);
@@ -47,7 +48,7 @@ defineCustomElements(window);
             provideAuth(() => getAuth()),
             PipesModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy, },TimeDisplayPipe],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy, },TimeDisplayPipe,DatePipe],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

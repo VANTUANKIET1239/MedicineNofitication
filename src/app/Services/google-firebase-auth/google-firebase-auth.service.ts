@@ -30,6 +30,7 @@ constructor() {
     await GoogleAuth.signOut();
     //localStorage.removeItem("ggtoken");
     await Preferences.remove({key: 'ggtoken'});
+    await Preferences.remove({key: 'User'});
   }
   async refresh(){
     const kiet = await GoogleAuth.refresh();

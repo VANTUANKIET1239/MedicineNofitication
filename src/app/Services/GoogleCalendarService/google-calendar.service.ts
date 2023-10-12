@@ -112,17 +112,18 @@ export class GoogleCalendarService {
 //   }
 //   return null;
 // }
- CheckLogin(): GoogleUser{
+ async CheckLogin():Promise<GoogleUser>{
   var userR =  new GoogleUser();
-  Preferences.get({key: 'ggtoken'}).then( async x => {
-    if(x){
-     // console.log(localStorage.getItem('User'));
+  var token = await Preferences.get({key: 'ggtoken'})
+    console.log(token);
+    if(token){
      var Us = await Preferences.get({key: 'User'});
+     console.log(Us);
     //  var user = JSON.parse(x.value || '') as GoogleUser
       userR =  JSON.parse(Us.value || '');
+      return userR;
     }
-  });
-  return userR;
+    return userR;
 }
  async DeleteEvent(eventId:string){
   var token = await Preferences.get({key: 'ggtoken'})

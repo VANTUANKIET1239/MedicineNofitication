@@ -12,7 +12,7 @@ const routes: Routes = [
         loadChildren: () => import('../MedicineManager/tab1.module').then(m => m.Tab1PageModule)
       },
       {
-        path: 'tab2',
+        path: 'news',
         loadChildren: () => import('../news/news.module').then(m => m.NewsPageModule)
       },
       {
@@ -20,15 +20,24 @@ const routes: Routes = [
         loadChildren: () => import('../slideshow/slideshow.module').then(m => m.SlideshowPageModule)
       },
       {
+        path: 'appointment',
+        loadChildren: () => import('../appointment/appointment.module').then( m => m.AppointmentPageModule)
+      },
+      {
+        path: 'user-setting',
+        loadChildren: () => import('../user-setting/user-setting.module').then( m => m.UserSettingPageModule)
+      },
+      {
         path: '',
-        redirectTo: 'tab1',
+        redirectTo: 'tab3',
         pathMatch: 'full'
-      }
+      },
+
     ]
   },
   {
     path: '',
-    redirectTo: 'tab1',
+    redirectTo: 'tab3',
     pathMatch: 'full'
   }
 ];

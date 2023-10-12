@@ -194,12 +194,12 @@ GetConverterSingle(){
     await updateDoc(prescriptionCollectionRefDT, item);
 
   }
-  async Prescription_Search(presriptionName?:string): Promise<Prescription[]>{
+  async Prescription_Search(userId:string, presriptionName?:string): Promise<Prescription[]>{
       const prescriptionCollectionRef = collection(this.firestore,`Prescription`);
-      const queryData = query(prescriptionCollectionRef,orderBy('fromDate', 'desc'));
+      const queryData = query(prescriptionCollectionRef,orderBy('fromDate', 'desc'), where('userId','==',userId));
       const allData = await getDocs(queryData);
 
-      var list: Prescription[] = []
+      var list: Prescription[] = [];
       allData.docs.forEach( async(x) => {
           let data = x.data();
           if((data['prescriptionName'] as string).toLowerCase().includes((presriptionName || '').toLowerCase()) || presriptionName == '' || presriptionName == null || presriptionName == undefined){
