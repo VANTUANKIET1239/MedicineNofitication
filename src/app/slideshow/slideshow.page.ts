@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import {register} from 'swiper/element/bundle';
 import { Swiper } from 'swiper/types';
 import { NewsServiceService } from '../Services/news-service/news-service.service';
@@ -20,13 +20,12 @@ export class SlideshowPage implements OnInit {
   swiperRef:ElementRef|undefined;
   swiper?=Swiper;
   ListNews:News[] = [];
-
   constructor(
     private temp:NewsServiceService,
     private router: Router,
     private navCtrl: NavController,
   ) {
-    
+
   }
 
   swiperReady() {

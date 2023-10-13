@@ -60,7 +60,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
     return this.prescriptionForm.get('medicineArrays') as FormArray;
   }
   ngOnInit(): void {
-    console.log(this.GoogleCalendarService.calculateDateDifference(new Date('2023-12-28T09:00:00-07:00'), new Date('2023-12-29T17:00:00-07:00')));
+   // console.log(this.GoogleCalendarService.calculateDateDifference(new Date('2023-12-28T09:00:00-07:00'), new Date('2023-12-29T17:00:00-07:00')));
 
      Preferences.get({key: 'ggtoken'}).then(x => {
       if(x.value){

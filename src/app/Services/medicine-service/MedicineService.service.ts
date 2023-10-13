@@ -123,9 +123,10 @@ async Prescription_Detail_Upd(model:PrescriptionDetail){
     return new Prescription();
 
 }
-async Prescription_List():Promise<Prescription[]>{
+async Prescription_List(id:any):Promise<Prescription[]>{
     const prescriptionCollectionRef = collection(this.firestore,`Prescription`);
-    const allData = await getDocs(prescriptionCollectionRef);
+    const queryData = query(prescriptionCollectionRef,orderBy('fromDate', 'desc'), where('userId','==',id));
+    const allData = await getDocs(queryData);
     const result =  allData.docs.map( async(x) => {
         let data = x.data();
         var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);

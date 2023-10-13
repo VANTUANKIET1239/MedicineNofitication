@@ -27,7 +27,8 @@ constructor() {
     return userS;
   }
   async signOut(){
-    await GoogleAuth.signOut();
+    var out =  await GoogleAuth.signOut();
+    console.log(out);
     //localStorage.removeItem("ggtoken");
     await Preferences.remove({key: 'ggtoken'});
     await Preferences.remove({key: 'User'});
