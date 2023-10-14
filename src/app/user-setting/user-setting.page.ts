@@ -1,3 +1,4 @@
+
 import { Component, OnInit, inject } from '@angular/core';
 import { GoogleUser } from '../models/GoogleUser';
 import { GoogleFirebaseAuthService } from '../Services/google-firebase-auth/google-firebase-auth.service';
@@ -14,6 +15,8 @@ import { Storage, StorageInstances, StorageModule, getDownloadURL, ref, uploadBy
 import { getStorage } from 'firebase/storage';
 import { initializeApp } from 'firebase/app';
 import { UserService } from '../Services/user-service/user.service';
+import { from } from 'rxjs';
+import { User } from '../models/User';
 
 
 const app = initializeApp({
@@ -36,17 +39,16 @@ export class UserSettingPage extends ComponentBase implements OnInit  {
     disableGG: boolean = false;
     googleUser :GoogleUser = new GoogleUser();
     userImage:any = 'https://w7.pngwing.com/pngs/627/335/png-transparent-a-camera-photo-picture-take-ui-ux-user-interface-outline-icon-thumbnail.png';
-    private auth:Auth = inject(Auth);
     //private storage: Storage = inject(Storage)
-    user$ =this.auth.currentUser;
-    private storage = getStorage(app);
-
+    //private storage = getStorage(app);
+    userModel: User = new User();
     constructor(
       private GoogleAuthService: GoogleFirebaseAuthService,
       private GoogleCalendarService: GoogleCalendarService,
       private navCtrl: NavController,
       private readonly loadingCtrl: LoadingController,
-      private userService: UserService
+      private userService: UserService,
+      private auth:Auth
     ) {
       super();
     }
@@ -58,8 +60,18 @@ export class UserSettingPage extends ComponentBase implements OnInit  {
           this.CheckGoogleLogin();
           this.googleLogin = false;
         }
-      });
 
+      });
+      this.LoadUser();
+    }
+    LoadUser(){
+          from(this.userService.User_ById(this.auth.currentUser?.uid || '')).subscribe(x => {
+                this.userModel = x;
+                if(this.userModel.imageUrl  != ''){
+                    this.userImage = this.userModel.imageUrl;
+                    console.log(this.userImage);
+                }
+          });
     }
 
     async LoginGoogle(){
@@ -84,6 +96,13 @@ export class UserSettingPage extends ComponentBase implements OnInit  {
           }
       });
     }
+  }
+  async ionViewWillEnter(){
+    const loading = await this.loadingCtrl.create();
+    await loading.present();
+    this.LoadUser();
+    await loading.dismiss();
+
   }
  async LogoutUser(){
         const loading = await this.loadingCtrl.create();
@@ -123,7 +142,9 @@ export class UserSettingPage extends ComponentBase implements OnInit  {
     //const blob = this.dataURLtoBlob(image.dataUrl);
     const blob = this.userService.dataURLtoBlob(image.dataUrl);
     const url = await this.userService.uploadImage(blob,image,'userimage');
+    await this.userService.User_AddImage(url);
     console.log(url);
+    this.ShowNofitication('Đổi hình đại diện thành công');
 
     }catch(e){
         console.log(e);

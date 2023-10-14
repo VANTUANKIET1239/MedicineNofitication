@@ -109,7 +109,7 @@ export class LoginPage extends ComponentBase implements OnInit {
                 let phone = result.user.phoneNumber || '';
                 let uid = result.user.uid || '';
                 if(!(await this.userService.CheckUserExists(uid))){
-                      this.userService.User_AddBase(phone);
+                      this.userService.User_AddBase(phone,uid);
                 }
                 //localStorage.setItem("phoneNumber",phone);
                 //localStorage.setItem("accessToken",result.user);

@@ -52,8 +52,8 @@ constructor(
       //   throw(e);
       // }
     }
-   async User_AddBase(phone:string){
-    const userCollectionRef = collection(this.firestore, "User");
+   async User_AddBase(phone:string,uid:string){
+    const userCollectionRef = doc(this.firestore, "User",uid);
     //const songDocRef = doc(prescriptionCollectionRef);
     const userData = {
       name: '',
@@ -65,8 +65,8 @@ constructor(
     };
     try{
       console.log(userData);
-    const newDocRef = await addDoc(userCollectionRef, userData);
-    console.log(newDocRef.id);
+    const newDocRef = await setDoc(userCollectionRef, userData);
+    console.log(newDocRef);
     }catch(e:any){
       console.log(e.message);
     }
@@ -97,10 +97,38 @@ constructor(
     }
     async User_AddImage(Url:string){
       console.log("URL: " + Url);
-      const prescriptionCollectionRef = collection(this.firestore, `User`);
-      const prescriptionDocRef = doc(prescriptionCollectionRef,this.auth.currentUser?.uid || '');
-      await setDoc(prescriptionDocRef, {
-        imageUrl: Url,
-     },{merge:true});
+      const UserCollectionRef = doc(this.firestore, `User/${this.auth.currentUser?.uid || ''}`);
+      const userData = {
+        imageUrl:Url
+      };
+      await updateDoc(UserCollectionRef,userData);
+    }
+    async User_ById(id:string){
+      const userCollectionRef = doc(this.firestore, `User`,id).withConverter(this.GetConverterSingle());
+      const docSnap = await getDoc(userCollectionRef);
+        if (docSnap.exists()) {
+          const user = docSnap.data();
+          return user;
+        }
+        return new User();
+    }
+    GetConverterSingle(){
+      const PresConverter = {
+        toFirestore: (user:any) => {
+            return {
+              name: user.name,
+              birthDate : user.birthDate,
+              gender : user.gender,
+              phone : user.phone,
+              email : user.email,
+              imageUrl: user.imageUrl
+            };
+        },
+        fromFirestore: async (snapshot:any, options:any) => {
+            const data = snapshot.data(options);
+            return new User(data.name, data.birthDate, data.gender, data.phone, data.email,data.imageUrl);
+        }
+      };
+      return PresConverter;
     }
 }
