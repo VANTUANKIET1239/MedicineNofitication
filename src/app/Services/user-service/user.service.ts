@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, addDoc, collection, doc, setDoc, updateDoc,docData, getDoc,collectionData, query, where, getDocs, deleteDoc, orderBy, arrayUnion } from '@angular/fire/firestore';
 import { getDownloadURL, ref, uploadBytes } from '@angular/fire/storage';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { initializeApp } from 'firebase/app';
 
@@ -91,8 +93,10 @@ constructor(
       try{
         console.log(userData);
        await updateDoc(userCollectionRef,userData);
+       return true;
       }catch(e:any){
         console.log(e.message);
+        return false;
       }
     }
     async User_AddImage(Url:string){
@@ -130,5 +134,24 @@ constructor(
         }
       };
       return PresConverter;
+    }
+    async TakeAPhoto(){
+      try{
+        if(Capacitor.getPlatform() != 'web') await Camera.requestPermissions();
+      const image = await Camera.getPhoto({
+        quality: 90,
+        source: CameraSource.Prompt,
+        resultType: CameraResultType.DataUrl
+      });
+      console.log(image);
+      const blob = this.dataURLtoBlob(image.dataUrl);
+      const url = await this.uploadImage(blob,image,'userimage');
+      await this.User_AddImage(url);
+      console.log(url);
+      return image.dataUrl;
+      }catch(e){
+          console.log(e);
+      }
+      return 'https://w7.pngwing.com/pngs/627/335/png-transparent-a-camera-photo-picture-take-ui-ux-user-interface-outline-icon-thumbnail.png';
     }
 }

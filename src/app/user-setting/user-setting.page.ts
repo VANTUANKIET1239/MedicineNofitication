@@ -129,26 +129,11 @@ export class UserSettingPage extends ComponentBase implements OnInit  {
       this.navCtrl.navigateForward(url);
     }
   }
-  async TakeAPhoto(){
-    try{
-      if(Capacitor.getPlatform() != 'web') await Camera.requestPermissions();
-    const image = await Camera.getPhoto({
-      quality: 90,
-      source: CameraSource.Prompt,
-      resultType: CameraResultType.DataUrl
-    });
-    console.log(image);
-    this.userImage = image.dataUrl;
-    //const blob = this.dataURLtoBlob(image.dataUrl);
-    const blob = this.userService.dataURLtoBlob(image.dataUrl);
-    const url = await this.userService.uploadImage(blob,image,'userimage');
-    await this.userService.User_AddImage(url);
-    console.log(url);
-    this.ShowNofitication('Đổi hình đại diện thành công');
-
-    }catch(e){
-        console.log(e);
-      }
+  async AddImage(){
+    var image = await this.userService.TakeAPhoto();
+    this.userImage = image;
   }
+
+
 
 }

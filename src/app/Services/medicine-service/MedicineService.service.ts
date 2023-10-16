@@ -205,6 +205,7 @@ GetConverterSingle(){
           let data = x.data();
           if((data['prescriptionName'] as string).toLowerCase().includes((presriptionName || '').toLowerCase()) || presriptionName == '' || presriptionName == null || presriptionName == undefined){
             var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);
+            if(new Date())
             list.push( new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT));
           }
     });

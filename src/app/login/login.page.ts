@@ -61,7 +61,7 @@ export class LoginPage extends ComponentBase implements OnInit {
       this.authState$.subscribe((aUser: User | null) => {
           if(aUser?.phoneNumber){
             console.log(aUser);
-            this.ShowNofitication(aUser.phoneNumber);
+         //   this.ShowNofitication(aUser.phoneNumber);
             this.navCtrl.navigateRoot('/main');
           }
           else{
@@ -101,12 +101,11 @@ export class LoginPage extends ComponentBase implements OnInit {
       this.OtpNumber = otp;
   }
    VerifyOTP(){
-    console.log(this.OtpNumber);
     var credential = PhoneAuthProvider.credential(this.otpcomfirmationResult.verificationId, this.OtpNumber);
     signInWithCredential(this.auth,credential).then(async(result) => {
             if(result.user){
               console.log(result);
-                let phone = result.user.phoneNumber || '';
+                let phone = result.user.phoneNumber?.substring(2) || '';
                 let uid = result.user.uid || '';
                 if(!(await this.userService.CheckUserExists(uid))){
                       this.userService.User_AddBase(phone,uid);

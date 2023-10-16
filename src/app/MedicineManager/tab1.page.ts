@@ -74,6 +74,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   }
   ngOnInit(): void {
     //this.InitMedicineList();
+
   }
   async InitMedicineList(userId:any){
     const loading = await this.loadingCtrl.create();
@@ -116,7 +117,6 @@ export class Tab1Page extends ComponentBase implements  OnInit{
     this.handleInputSearch();
     this.modalStates = {};
     await loading.dismiss();
-
   }
   addItem(){
 
@@ -196,12 +196,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
      });
 
   }
-  ionModalWillDismiss(){
 
-  }
-  buttonXClicked(){
-
-  }
   // async doRefresh(event:any){
 
   //     // Complete the refresh action\

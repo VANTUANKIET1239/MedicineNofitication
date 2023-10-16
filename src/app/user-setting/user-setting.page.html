@@ -6,7 +6,7 @@
 
 <ion-content [fullscreen]="true">
   <div class="user-profile">
-    <div (click)="TakeAPhoto()" class="profile-image">
+    <div (click)="AddImage()" class="profile-image">
       <img [src]="userImage" alt="User Profile">
     </div>
     <ion-item>
@@ -32,7 +32,7 @@
       </div>
     </ion-item>
     <ion-item class="profile-option" >
-      <ion-button  fill="clear">Thông tin cá nhân</ion-button>
+      <ion-button (click) = "NavigateToPage('/user-edit')"  fill="clear">Thông tin cá nhân</ion-button>
       <ion-icon name="chevron-forward"></ion-icon>
     </ion-item>
     <ion-item class="profile-option" >
@@ -40,7 +40,7 @@
       <ion-icon name="chevron-forward"></ion-icon>
     </ion-item>
     <ion-item class="profile-option" >
-      <ion-button   fill="clear">Hỗ trợ</ion-button>
+      <ion-button  fill="clear">Hỗ trợ</ion-button>
       <ion-icon name="chevron-forward"></ion-icon>
     </ion-item>
     <div class="btn-out">
