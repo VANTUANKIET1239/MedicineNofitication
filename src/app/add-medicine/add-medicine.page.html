@@ -71,14 +71,14 @@
         <div class="form-control">
           <ion-item>
             <img style="width: 50px; height: 50px" src="../../assets/image/gg.png" alt="">
-            <ion-toggle [disabled]="disableGG" [checked]="disableGG"  (ionChange)="onGGEvent($event)"
+            <ion-toggle [disabled]="disableGG" (ionChange)="onGGEvent($event)"
               justify="space-between">Đặt lời nhắc vào Google Calendar</ion-toggle>
           </ion-item>
           <div class="gg-login">
             <ng-container *ngIf="googleLogin">
               <ion-button (click) = "LoginGoogle()" color="warning" style="width: 100%;">Đăng nhập <img style="width: 24px; height: 24px;" src="../../assets/image/icons8-google-48.png" alt=""></ion-button>
             </ng-container>
-            <ng-container  *ngIf="disableGG">
+            <ng-container  *ngIf="IsLoginGG">
                 <div class="user-info">
                   <div style="display: flex; align-items: center;justify-content: center;">
                     <ion-avatar>
@@ -100,12 +100,12 @@
 
         <div class="form-control">
           <ion-item>
-            <ion-toggle formControlName="isAllDate" (ionChange)="checkDateTime();onChangeAllDate($event)"
+            <ion-toggle formControlName="isAllDate" [disabled]="disableAllDay" (ionChange)="checkDateTime();onChangeAllDate($event)"
               justify="space-between">Mọi ngày</ion-toggle>
           </ion-item>
         </div>
 
-        <div class="date-pres" *ngIf="isAllDate">
+        <div class="date-pres" *ngIf="!isAllDate">
           <div class="form-control">
             <ion-item>
               <ion-label>Từ ngày</ion-label>
@@ -131,6 +131,17 @@
             </ion-modal>
 
           </div>
+        </div>
+        <div class="day-of-weeks" *ngIf="isAllDate">
+            <ng-container *ngFor="let item of listDays" >
+                  <ion-button
+                  id = "{{item}}"
+                  color="{{listDayPicking[item] === true ?'danger': 'primary'}}"
+                  class="btn-day"
+                  (click) = "dayClick(item)">
+                        {{item === 1 ? 'CN' : 'T' + item}}
+                  </ion-button>
+            </ng-container>
         </div>
 
         <div class="form-control">

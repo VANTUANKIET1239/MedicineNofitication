@@ -10,7 +10,7 @@
     [pagination]="true"
     [autoplay]="{
       delay: 4000,
-      disableOnInteraction: false 
+      disableOnInteraction: false
     }">
     <swiper-slide *ngFor="let mem of ListNews">
       <div class="my-card-container">
@@ -22,8 +22,9 @@
             <a (click)="viewDetail(mem?.id || '')" class="view-more">Xem thêm</a>
             <ion-img [src]="mem?.img" class="my-img"></ion-img>
           </ion-card>
-        </a> 
+        </a>
       </div>
     </swiper-slide>
   </Swiper-container>
+  <ion-button (click) = "schedulEvent()">schedule</ion-button>
 </ion-content>

@@ -1,3 +1,4 @@
+import { NofiticationService } from './../Services/nofitication-service/nofitication.service';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import {register} from 'swiper/element/bundle';
 import { Swiper } from 'swiper/types';
@@ -24,6 +25,7 @@ export class SlideshowPage implements OnInit {
     private temp:NewsServiceService,
     private router: Router,
     private navCtrl: NavController,
+    private NofiticationService: NofiticationService
   ) {
 
   }
@@ -65,5 +67,8 @@ export class SlideshowPage implements OnInit {
       this.ListNews=x;
       console.log(this.ListNews);
     })
+  }
+  schedulEvent(){
+        // this.NofiticationService.scheduleNotification('dfouewfdowebfoiuwebf');
   }
 }

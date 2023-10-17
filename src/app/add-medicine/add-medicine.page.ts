@@ -32,8 +32,13 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
   user$ =this.auth.currentUser;
   isAllDate: boolean = true;
   googleLogin: boolean = false;
+  IsLoginGG:boolean = false;
   disableGG: boolean = false;
+  disableAllDay: boolean = false;
   googleUser :GoogleUser = new GoogleUser();
+
+  listDayPicking: { [key: number]: boolean } = {};
+  listDays: number[] = [2,3,4,5,6,7,1];
   constructor(private formBuilder: FormBuilder,
     private modalController: ModalController,
     private readonly loadingCtrl: LoadingController,
@@ -49,7 +54,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
       prescriptionName: ['', Validators.required],
       doctorName: ['', Validators.required],
       medicineStoreName: ['', Validators.required],
-      isAllDate: [false],
+      isAllDate: [true],
       fromDate: [new Date().toISOString()],
       toDate: [new Date().toISOString()],
       pickTime: [new Date().toISOString()],
@@ -58,6 +63,16 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
   }
   get medicineArrays(): FormArray {
     return this.prescriptionForm.get('medicineArrays') as FormArray;
+  }
+  dayClick(event:number){
+        if(this.listDayPicking[event]){
+            this.listDayPicking[event] = false;
+        }
+        else{
+          this.listDayPicking[event] = true;
+        }
+        console.log(this.listDayPicking);
+       console.log( Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number))
   }
   ngOnInit(): void {
    // console.log(this.GoogleCalendarService.calculateDateDifference(new Date('2023-12-28T09:00:00-07:00'), new Date('2023-12-29T17:00:00-07:00')));
@@ -115,41 +130,41 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
   }
   async LoginGoogle(){
      this.googleUser = await this.GoogleAuthService.signIn();
-    // this.GoogleCalendarService.test();
-    // this.GoogleCalendarService.test();
+
      this.googleLogin = false;
      this.disableGG = true;
-    //  console.log(localStorage.getItem('ggtoken'));
-    //  console.log(this.GoogleCalendarService.test());
-    //await this.GoogleAuthService.refresh();
+     this.IsLoginGG = true;
+
 
   }
   async LogoutGoogle(){
     await this.GoogleAuthService.signOut();
     this.disableGG = false;
     this.googleLogin = true;
-   // this.GoogleCalendarService.insertEvent2(new Prescription());
-    //this.CheckGoogleLogin();
-    // await this.GoogleAuthService.refresh();
-    //await this.GoogleCalendarService.insertEvent();
+    this.IsLoginGG  =false;
 
   }
   onGGEvent(event:any){
     var checkGG = event.detail.checked;
     if(checkGG){
         this.googleLogin = checkGG;
+        this.disableAllDay = checkGG;
     }
     else{
       this.googleLogin = checkGG;
+      this.disableAllDay = checkGG;
     }
   }
   onChangeAllDate(event:any){
     var checkAllDate = event.detail.checked;
+    console.log(checkAllDate);
     if(!checkAllDate){
-        this.isAllDate = !checkAllDate;
+        this.isAllDate = false;
+        this.disableGG = false;
     }
     else{
-      this.isAllDate = !checkAllDate;
+      this.isAllDate = true;
+      this.disableGG = true;
     }
   }
   checkInputValue(){
@@ -258,12 +273,18 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
      this.model.toDate = formValue.toDate;
     this.model.prescriptionDetails = modelDT;
     this.model.userId = this.user$?.uid;
+    this.model.dayOfWeeks = Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number);
       await loading.present();
       var result = await this.MedicineService.Prescription_Add(this.model);
-      if(this.disableGG){
+      if(!formValue.isAllDate){
+        // add vao lich google
         const IdNew = await Preferences.get({key: 'presId'});
         console.log(IdNew.value);
         await this.GoogleCalendarService.insertEvent(this.model,IdNew.value || "");
+      }
+      else{
+        // add vào notification cua android
+
       }
       await loading.dismiss();
      if(result){
