@@ -1,3 +1,5 @@
+import { NofiticationService } from './../Services/nofitication-service/nofitication.service';
+
 import { GoogleCalendarService } from './../Services/GoogleCalendarService/google-calendar.service';
 import { async } from '@angular/core/testing';
 import { PrescriptionDetail } from './../models/prescriptionDetail';
@@ -16,6 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GoogleFirebaseAuthService } from '../Services/google-firebase-auth/google-firebase-auth.service';
 import { GoogleUser } from '../models/GoogleUser';
 import { Preferences } from '@capacitor/preferences';
+
 
 // import { MedicineServiceService } from '../Services/medicine-service/MedicineService.service';
 
@@ -36,7 +39,49 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
   disableGG: boolean = false;
   disableAllDay: boolean = false;
   googleUser :GoogleUser = new GoogleUser();
+  selectedValue:any;
+  public pickerColumns = [
+    {
+      name: 'languages',
+      options: [
+        {  text: '1', value: '1'},
+        {  text: '2', value: '2'},
+        {  text: '3', value: '3'},
+        {  text: '4', value: '4'},
+        {  text: '5', value: '5'},
+        {  text: '6', value: '6'},
+        {  text: '7', value: '7'},
+        {  text: '8', value: '8'},
+        {  text: '9', value: '9'},
+        {  text: '10', value: '10'},
+        {  text: '11', value: '11'},
+        {  text: '12', value: '12'},
+        {  text: '13', value: '13'},
+        {  text: '14', value: '14'},
+        {  text: '15', value: '15'},
+        {  text: '16', value: '16'},
+        {  text: '17', value: '17'},
+        {  text: '18', value: '18'},
+        {  text: '19', value: '19'},
+        {  text: '20', value: '20'},
+      ],
+    },
+  ];
 
+  public pickerButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+    },
+    {
+      text: 'Confirm',
+      handler: (value:any) => {
+
+        this.selectedValue = value.languages.value;
+
+      },
+    },
+  ];
   listDayPicking: { [key: number]: boolean } = {};
   listDays: number[] = [2,3,4,5,6,7,1];
   constructor(private formBuilder: FormBuilder,
@@ -48,6 +93,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
     private GoogleAuthService: GoogleFirebaseAuthService,
     private route: Router,
     private navCtrl: NavController,
+    private localNotifications: NofiticationService
       ) {
     super();
     this.prescriptionForm = this.formBuilder.group({
@@ -74,6 +120,14 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
         console.log(this.listDayPicking);
        console.log( Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number))
   }
+  selectedValues(event:any){
+      console.log(event);
+  }
+  setValue(i:number){
+        console.log(this.selectedValue);
+        let medicineArr = this.medicineArrays;
+        medicineArr.controls[i].patchValue({quantity:this.selectedValue});
+  }
   ngOnInit(): void {
    // console.log(this.GoogleCalendarService.calculateDateDifference(new Date('2023-12-28T09:00:00-07:00'), new Date('2023-12-29T17:00:00-07:00')));
 
@@ -89,7 +143,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
             this.PatchValueModel(this.model);
            }
      });
-    })
+    });
   }
    CheckGoogleLogin(){
     if(this.disableGG){
@@ -127,6 +181,12 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
         toDate: model.toDate,
       });
     }
+    this.model.dayOfWeeksItem?.forEach((itemNumber) => {
+      this.listDayPicking[itemNumber] = true;
+    });
+    console.log('patchvalue list day');
+    console.log(this.listDayPicking);
+    console.log( Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number))
   }
   async LoginGoogle(){
      this.googleUser = await this.GoogleAuthService.signIn();
@@ -212,9 +272,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
             modelDTitem.quantityPerDose = item.quantity;
             modelDTitem.isDone = item.prescriptionDetailId ? item.isDone : '0';
             modelDT.push(modelDTitem);
-
       });
-
        this.model.prescriptionName = formValue.prescriptionName;
        this.model.doctorName = formValue.doctorName;
        this.model.medicineStoreName = formValue.medicineStoreName;
@@ -223,10 +281,21 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
        this.model.toDate = formValue.toDate;
       this.model.prescriptionDetails = modelDT;
       this.model.userId = this.user$?.uid;
+      this.model.dayOfWeeksItem = Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number);
         await loading.present();
         var result = await this.MedicineService.Prescription_Upd(this.model);
-        // load lại model
         this.model = await this.MedicineService.Prescription_ById(this.model.prescriptionId);
+        console.log("modelUpd");
+        console.log(this.model);
+        if((this.model.dayOfWeeks?.length || [].length) > 0 || this.model.dayOfWeeks != undefined){
+         let listdaysUpd = this.model.dayOfWeeksItem || [];
+          this.model.dayOfWeeks?.forEach(x => {
+            console.log('x ' + x);
+              this.localNotifications.CancelSchedule(x);
+          });
+          await this.localNotifications.scheduleNotification(listdaysUpd,this.model.getAllTime() || [],this.model.prescriptionName || '',this.model.prescriptionId);
+        }
+        // load lại model
         if(this.disableGG){
           console.log("event upd");
           console.log(this.model.eventIds);
@@ -241,7 +310,6 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
         await loading.dismiss();
        if(result){
             this.ShowNofitication("Chỉnh sửa đơn thuốc thành công");
-
        }
        else{
         this.ShowNofitication("Chỉnh sửa thuốc thất bại");
@@ -273,18 +341,19 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
      this.model.toDate = formValue.toDate;
     this.model.prescriptionDetails = modelDT;
     this.model.userId = this.user$?.uid;
-    this.model.dayOfWeeks = Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number);
+    this.model.dayOfWeeks  = [];
+    this.model.dayOfWeeksItem = Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number);
       await loading.present();
       var result = await this.MedicineService.Prescription_Add(this.model);
+      var IdNew = await Preferences.get({key: 'presId'});
       if(!formValue.isAllDate){
         // add vao lich google
-        const IdNew = await Preferences.get({key: 'presId'});
         console.log(IdNew.value);
         await this.GoogleCalendarService.insertEvent(this.model,IdNew.value || "");
       }
       else{
         // add vào notification cua android
-
+        await this.localNotifications.scheduleNotification(this.model.dayOfWeeksItem,this.model.getAllTime() || [],this.model.prescriptionName || '',IdNew.value || '');
       }
       await loading.dismiss();
      if(result){

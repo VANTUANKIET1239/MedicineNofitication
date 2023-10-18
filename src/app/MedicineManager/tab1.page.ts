@@ -8,6 +8,7 @@ import { from } from 'rxjs';
 import { AlertController, IonModal, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
 import { Auth } from '@angular/fire/auth';
+import { NofiticationService } from '../Services/nofitication-service/nofitication.service';
 
 
 @Component({
@@ -46,7 +47,8 @@ export class Tab1Page extends ComponentBase implements  OnInit{
               private readonly loadingCtrl: LoadingController,
               private modalController: ModalController,
               private alertController: AlertController,
-              private GoogleCalendarService: GoogleCalendarService
+              private GoogleCalendarService: GoogleCalendarService,
+              private notificationService: NofiticationService
               ) {
                 super();
     this.prescriptionForm = this.formBuilder.group({
@@ -103,6 +105,11 @@ export class Tab1Page extends ComponentBase implements  OnInit{
               await this.GoogleCalendarService.DeleteEvent(x);
             });
         }
+        if(presItem.dayOfWeeks && presItem.dayOfWeeks.length > 0 ){
+          presItem.dayOfWeeks.forEach(async x => {
+            await this.notificationService.CancelSchedule(x);
+          });
+      }
         if(await this.MedicineService.Prescription_Del(pres.prescriptionId,IdDTs)){
             this.ShowNofitication("Xóa đơn thuốc thành công");
         }

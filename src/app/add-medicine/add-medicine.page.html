@@ -51,9 +51,16 @@
                       <ion-input id="name" class="medicine-input" label="Tên thuốc" label-placement="floating"
                         fill="outline" formControlName="medicine" type="text" required></ion-input>
                     </div>
-                    <div style="width: 50px;;background-color: white;">
-                      <ion-input class="quantity-input" label-placement="floating" fill="outline" min="0" max="20"
-                        formControlName="quantity" type="number" required></ion-input>
+                    <div style="width: 65px;background-color: white;">
+                      <ion-input id = "open-picker-{{i}}" class="quantity-input" label-placement="floating" fill="outline" min="0" max="20"
+                        formControlName="quantity" type="number" required readonly></ion-input>
+
+                        <ion-picker
+
+                        (didDismiss)="setValue(i)"
+                        trigger="open-picker-{{i}}"
+                         [columns]="pickerColumns"
+                         [buttons]="pickerButtons"></ion-picker>
                     </div>
                     <div>
                       <ion-button style="width: 100%;height: 100%; padding: 0;" (click)="deleteItemArrays(i,'medicine')"
