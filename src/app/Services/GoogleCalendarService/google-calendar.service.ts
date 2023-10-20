@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { GoogleUser } from 'src/app/models/GoogleUser';
 import { Prescription } from 'src/app/models/prescription';
 import { format, getDate, parseISO, toDate } from 'date-fns';
-import { da } from 'date-fns/locale';
 import { MedicineServiceService } from '../medicine-service/MedicineService.service';
 import { Preferences } from '@capacitor/preferences';
 declare var gapi: any;

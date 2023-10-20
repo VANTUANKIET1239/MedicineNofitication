@@ -1,0 +1,61 @@
+.user-profile {
+  text-align: center;
+  margin-top: 20px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.profile-image img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #afccff; /* Add your desired border color */
+  margin: 0 auto;
+}
+.profile-image{
+  margin-bottom: 30px;
+}
+.profile-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+ion-button {
+  width: 100%;
+  --color:dark;
+  height: 50px;
+}
+.profile-option {
+  --ion-item-background: transparent;
+  --ion-item-text-transform: none;
+  width: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom: 1px solid var(--ion-item-divider-color);
+  font-size: 18px;
+}
+
+.profile-option ion-label {
+  margin-left: 8px;
+}
+.btn-out{
+  margin-top: 15px;
+}
+.profile-option:last-child {
+  border-bottom: none;
+}
+.user-info{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #A9A9A9;
+  padding: 10px;
+  border-radius: 15px;
+}
+.gg-login{
+  width: 100%;
+  margin: 10px;
+}

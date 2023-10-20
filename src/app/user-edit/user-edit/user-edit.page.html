@@ -1,0 +1,69 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>user-edit</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="user-profile">
+    <div (click)="TakeAPhoto()" class="profile-image">
+      <img [src]="userImage" alt="User Profile">
+    </div>
+    <!-- (ngSubmit)="SaveInput()" [formGroup]="prescriptionForm" -->
+    <form class="form-create"  (ngSubmit)="SaveInput()" [formGroup]="UserForm">
+    <div class="form-control">
+      <ion-input class="input-create" label="Họ tên" label-placement="floating" fill="outline"
+        formControlName="name" type="text" required></ion-input>
+    </div>
+    <div class="form-control">
+      <ion-row>
+          <ion-col size="10">
+            <ion-input class="input-create" label="Ngày sinh" label-placement="stacked" fill="outline"
+            type="text" readonly [value]="BirthDateView"></ion-input>
+          </ion-col>
+          <ion-col size="2">
+            <ion-button style="width: 50px;height: 50px;" id="open-modal">
+              <ion-icon slot="icon-only" name="calendar-clear-outline"></ion-icon>
+            </ion-button>
+            <ion-modal trigger="open-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+              <ng-template>
+                <div class="btn-selected-time">
+                  <ion-button style="width: 100px;" (click)="SetBirthDay()">Chọn</ion-button>
+                </div>
+
+                <div class="centered-content">
+                  <ion-datetime formControlName="birthDate" presentation="date" [preferWheel]="true"></ion-datetime>
+                </div>
+              </ng-template>
+            </ion-modal>
+          </ion-col>
+      </ion-row>
+    </div>
+    <div class="form-control">
+      <ion-row>
+        <ion-col size="12">
+          <ion-select aria-label="Fruit" label="Giới tính"  fill="outline" interface="action-sheet" formControlName = 'gender' placeholder="Chọn giới tính">
+            <ion-select-option value="Nam">Nam</ion-select-option>
+            <ion-select-option value="Nữ">Nữ</ion-select-option>
+          </ion-select>
+        </ion-col>
+        <!-- <ion-col size="10">
+
+        </ion-col> -->
+      </ion-row>
+    </div>
+    <div class="form-control">
+      <ion-input  class="input-create" label="Số điện thoại" label-placement="floating" fill="outline"
+      formControlName="phone" type="text" ></ion-input>
+    </div>
+    <div class="form-control">
+      <ion-input class="input-create" label="Email" label-placement="floating" fill="outline"
+        formControlName="email" type="text"></ion-input>
+    </div>
+    <ion-button expand="full" type="submit">Cật nhật</ion-button>
+    </form>
+  </div>
+</ion-content>

@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { Appointment } from '../models/Appointment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
 import { GetdataService } from '../Services/addApointment/addApointment.service';
 import { DatePipe } from '@angular/common';
+import { Auth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-edit-appointment',
@@ -25,6 +26,8 @@ export class EditAppointmentPage implements OnInit {
   formattedBookday: any;
   formattedMaxday: any;
   doctor: any[]=[];
+  private auth:Auth = inject(Auth);
+  user$ =this.auth.currentUser;
 
   constructor(
     public modalCtrl: ModalController,
@@ -50,15 +53,6 @@ export class EditAppointmentPage implements OnInit {
 
   async getData() {
     this.AppointmentService.getKhoa(this.doctor)
-    // const docRef = doc(
-    //   this.AppointmentService.db,
-    //   'danh sách người dùng',
-    //   '1',
-    //   'đặt lịch khám',
-    //   this.idAp
-    // );
-    // const docSnap = await getDoc(docRef);
-    // console.log(docSnap.data())
      this.editApointment = await this.AppointmentService.GetAppoint(this.idAp);
 
     this.formattedBookday = this.datePipe.transform(
@@ -117,16 +111,17 @@ export class EditAppointmentPage implements OnInit {
         phone: this.editApointment.phone,
         date: this.editApointment.date,
         doctor: this.editApointment.doctor,
+        id: this.user$?.uid,
       };
       const cdate = new Date(this.editApointment.date);
       let check = await this.AppointmentService.checkApoint('1', cdate);
       console.log(check);
       if (check) {
         if (this.isAppointmentBookM(this.editApointment.date)) {
-          this.AppointmentService.updateApoint('1', this.idAp, data);
+          this.AppointmentService.updateApoint(this.idAp, data);
           this.closeModal();
         } else if (this.isAppointmentBookA(this.editApointment.date)) {
-          this.AppointmentService.updateApoint('1', this.idAp, data);
+          this.AppointmentService.updateApoint(this.idAp, data);
           this.closeModal();
         } else {
           this.presentToast(
@@ -180,7 +175,7 @@ export class EditAppointmentPage implements OnInit {
           text: 'Xác nhận',
           role: 'destructive',
           handler: async () => {
-            let check=this.AppointmentService.checkApointEdit("1",this.idAp,this.editApointment.date);
+            let check=this.AppointmentService.checkApointEdit(this.idAp,this.editApointment.date);
             if(await check){
               this.updateData();
             }else{
