@@ -15,6 +15,7 @@ import { NgOtpInputModule } from  'ng-otp-input';
 
 import { provideFirebaseApp,initializeApp  } from '@angular/fire/app';
 import {provideFirestore, getFirestore} from '@angular/fire/firestore'
+//import { AngularFireDatabase } from '@angular/fire/database';
 import { environment } from 'src/environments/environment.prod';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { TimeDisplayPipe } from './Pipes/TimeDisplay.pipe';

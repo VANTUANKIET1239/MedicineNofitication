@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDocs, getDoc, getFirestore, DocumentSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDocs, getDoc, setDoc, getFirestore, DocumentSnapshot } from '@angular/fire/firestore';
 import { DocumentReference } from '@angular/fire/firestore';
 import { News } from 'src/app/models/news';
 
@@ -45,8 +45,22 @@ async getNewsById(id: string): Promise<News | null> {
     console.error('Lỗi khi lấy tin tức từ Firestore:', error);
     throw error; // Chuyển tiếp lỗi cho phía gọi để xử lý.
   }
+
 }
+async updateLikeCount(id: string , newLikeCount: number ): Promise<void> {
+  const firestore = collection(this.firestore, 'News');
 
+  try {
+    // Tạo một tham chiếu đến tài liệu tin tức trong Firestore dựa trên id.
+    const newsDocRef = doc(firestore, id);
 
+    // Cập nhật số lượt thích trong tài liệu tin tức.
+    await setDoc(newsDocRef, { like: newLikeCount }, { merge: true });
+  } catch (error) {
+    // Xử lý lỗi nếu có bất kỳ lỗi nào xảy ra trong quá trình cập nhật Firestore.
+    console.error('Lỗi khi cập nhật số lượt thích:', error);
+    throw error; // Chuyển tiếp lỗi cho phía gọi để xử lý.
+  }
+}
 
 }

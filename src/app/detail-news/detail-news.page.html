@@ -19,7 +19,7 @@
         <!-- Thêm nút "Tym" và số lượt thích -->
         <ion-buttons slot="end" (click)="likeNews()">
           <ion-button>
-            <ion-icon name="heart" [color]="isLiked ? 'danger' : 'primary'"></ion-icon>
+            <ion-icon name="thumbs-up" [color]="isLiked ? 'primary' : 'darkblue'"></ion-icon>
             <span class="like-count">{{ newsDetail.like }} người thích tin này!</span>
           </ion-button>
         </ion-buttons>
