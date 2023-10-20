@@ -7,7 +7,7 @@
 </ion-header>
 <ion-content class="news" [fullscreen]="true" class="ion-padding">
   <div class="news-container">
-    <ion-card class="my-card" *ngFor="let mem of ListNews">
+    <ion-card class="my-card" *ngFor="let mem of ListNews" (click)="viewDetail(mem?.id|| '')">
       <ion-card-header class="img-title">
         <ion-card-title>{{ mem.title }}</ion-card-title>
       </ion-card-header>

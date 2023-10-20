@@ -42,7 +42,11 @@ export class SlideshowPage implements OnInit {
         id: id
     }
     this.NavigateToPage('/detail-news',paras)
-  }
+  };
+  navigateToTab2() {
+    this.router.navigate(['/main/news']);
+  };
+  
   NavigateToPage(url:string, paras?:any){
     if(paras){
       console.log(paras);

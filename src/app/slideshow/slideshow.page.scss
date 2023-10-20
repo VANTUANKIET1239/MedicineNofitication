@@ -44,7 +44,6 @@
     align-items: center;
     position: relative;
     border-radius: 10px;
-    padding: 4px 0;
 
     .view-more {
       margin-right: auto; 
@@ -62,10 +61,10 @@
       object-fit: cover; 
     }
 
-    .img-title {
-      color: #737373;
-      font-size: 1rem !important;
-    }
+    // .img-title {
+    //   color: #737373;
+    //   font-size: 1rem !important;
+    // }
 
     .my-pagination {
       position: absolute;
