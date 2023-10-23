@@ -1,18 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { Appointment } from '../models/Appointment';
-import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
-import { GetdataService } from '../Services/addApointment/addApointment.service';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
 import { AddAppointmentPage } from '../add-appointment/add-appointment.page';
 import { EditAppointmentPage } from '../edit-appointment/edit-appointment.page';
+import { Appointment } from '../models/Appointment';
+import { GetdataService } from '../Services/addApointment/addApointment.service';
+import { LocalNotificationsService } from '../Services/addApointment/notifications.service';
 
 @Component({
   selector: 'app-appointment',
   templateUrl: './appointment.page.html',
   styleUrls: ['./appointment.page.scss'],
 })
-export class AppointmentPage implements OnInit {
 
+export class Tab1Page {
   appointments: Appointment[] = [];
   id: any[] = [];
 
@@ -21,26 +22,25 @@ export class AppointmentPage implements OnInit {
     private config: GetdataService,
     private router: Router,
     private actionSheetController: ActionSheetController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private localNotificationsService: LocalNotificationsService
   ) {}
-  ngOnInit(): void {
 
-  }
-
-  ngOnit() {}
 
   ionViewWillEnter() {
-    this.getdata();
+   this.getdataAndScheduleNotifications();
     console.log(this.id);
     this.router
-      .navigateByUrl('/main/appointment', { skipLocationChange: true })
+      .navigateByUrl('/tab1', { skipLocationChange: true })
       .then(() => {
-        this.router.navigate(['/main/appointment']);
+        this.router.navigate(['tab1']);
       });
   }
 
-  getdata() {
-    this.config.getListApoint('1', this.appointments, this.id);
+  getdataAndScheduleNotifications() {
+    this.config.getListApoint('1', this.appointments, this.id).then(() => {
+      this.scheduleNotificationsForAppointments(this.appointments);
+    });
   }
 
   formatDateTime(inputDateTime: Date) {
@@ -51,7 +51,7 @@ export class AppointmentPage implements OnInit {
     const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-
+    
     if (date < currentDate) {
       return `${day}/${month}/${year} ${hours}:${minutes}` + '(Hết hạn)'; // quá hạn sẽ không thể sửa
     } else {
@@ -63,7 +63,7 @@ export class AppointmentPage implements OnInit {
   isAppointmentEdit(appointmentDate: Date): boolean {
     const currentDate = new Date();
     const date = new Date(appointmentDate);
-    currentDate.setHours(currentDate.getHours() + 2);
+    currentDate.setHours(currentDate.getHours() + 2); 
     return date < currentDate;
   }
 
@@ -79,38 +79,38 @@ export class AppointmentPage implements OnInit {
     const modal = this.modalCtrl.create({
       component: AddAppointmentPage,
     });
-
+  
     if (modal) {
       modal.then((modalInstance) => {
         modalInstance.present();
         modalInstance.onDidDismiss().then(() => {
-          this.getdata();
+          this.getdataAndScheduleNotifications();
         });
       });
     } else {
       console.error('Failed to create modal');
     }
   }
-
+  
 
   editAppointment(appointment: any) {
     const modal = this.modalCtrl.create({
       component: EditAppointmentPage,
       componentProps: { idAp: appointment },
     });
-
+  
     if (modal) {
       modal.then((modalInstance) => {
         modalInstance.present();
         modalInstance.onDidDismiss().then(() => {
-          this.getdata();
+          this.getdataAndScheduleNotifications();
         });
       });
     } else {
       console.error('Failed to create modal');
     }
   }
-
+  
 
   async presentActionSheet(appointment: any) {
     const actionSheet = await this.actionSheetController.create({
@@ -125,8 +125,8 @@ export class AppointmentPage implements OnInit {
             this.config.deleteApoint(appointment);
             console.log('Tài liệu đã được xóa thành công.');
             this.presentToast('Xóa thành công');
-            this.getdata();
-
+            this.getdataAndScheduleNotifications();
+                
           },
         },
         {
@@ -149,5 +149,18 @@ export class AppointmentPage implements OnInit {
     });
     toast.present();
   }
-
+  scheduleNotificationsForAppointments(appointments: any[]) {
+    appointments.forEach((appointment: any) => {
+      const appointmentDate = new Date(appointment.dateTime);
+      const notificationTime = new Date(appointmentDate);
+      notificationTime.setHours(notificationTime.getHours() - 2); // Đặt thông báo 2 giờ trước cách lịch hẹn
+  
+      this.localNotificationsService.scheduleNotification(
+        'Tiêu đề thông báo',
+        'Nội dung thông báo',
+        appointment.id, // ID của thông báo (có thể sử dụng ID của lịch hẹn)
+        notificationTime.getTime()
+      );
+    });
+  }
 }
