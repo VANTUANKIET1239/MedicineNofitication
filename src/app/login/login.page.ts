@@ -11,6 +11,7 @@ import { GoogleFirebaseAuthService } from '../Services/google-firebase-auth/goog
 import { NavController } from '@ionic/angular';
 import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
 import { Prescription } from '../models/prescription';
+import { UserService } from '../Services/user-service/user.service';
 //const app = initializeApp(environment.firebase);
 // const app = initializeApp({
 //   apiKey: "AIzaSyB59ZKtqB6hIaTgVby5u0bYbaW38-xku-w",
@@ -45,6 +46,7 @@ export class LoginPage extends ComponentBase implements OnInit {
                private googleCalendarService: GoogleCalendarService,
                private googleAuth:GoogleFirebaseAuthService,
                private readonly loadingCtrl: LoadingController,
+               private userService: UserService
     ) {
         super();
    }
@@ -59,11 +61,11 @@ export class LoginPage extends ComponentBase implements OnInit {
       this.authState$.subscribe((aUser: User | null) => {
           if(aUser?.phoneNumber){
             console.log(aUser);
-            this.ShowNofitication(aUser.phoneNumber);
+         //   this.ShowNofitication(aUser.phoneNumber);
             this.navCtrl.navigateRoot('/main');
           }
           else{
-            this.ShowNofitication("that bai");
+            this.ShowNofitication("phiên đăng nhập hết hạn");
           }
       });
 
@@ -88,11 +90,6 @@ export class LoginPage extends ComponentBase implements OnInit {
               this.otpcomfirmationResult = confirmationResult;
               this.isLogin = !this.isLogin;
               loading.dismiss();
-            }).catch((error) => {
-              setTimeout(() => {
-                window.location.reload;
-              }, 5000);
-              this.isLogin = !this.isLogin;
             });
           }
         }
@@ -103,31 +100,16 @@ export class LoginPage extends ComponentBase implements OnInit {
   onOtpChange(otp:string){
       this.OtpNumber = otp;
   }
-  // VerifyOTP(){
-  //   console.log(this.OtpNumber);
-  //   this.otpcomfirmationResult.confirm(this.OtpNumber)
-  //   .then((result) => {
-  //       if(result.user){
-  //         console.log(result);
-  //           let phone = result.user.phoneNumber || '';
-  //           localStorage.setItem("phoneNumber",phone);
-  //      //     localStorage.setItem("accessToken",result.user);
-  //           //this.route.navigate(['/main']);
-  //           this.navCtrl.navigateRoot('/main');
-  //       }
-  //   })
-  //   .catch((error) => {
-  //       this.ShowNofitication("Đã có lỗi xảy ra hoặc nhập OTP sai, xin mời thử lại" + error.message);
-  //       this.isLogin = !this.isLogin;
-  //   });
-  // }
-  VerifyOTP(){
-    console.log(this.OtpNumber);
+   VerifyOTP(){
     var credential = PhoneAuthProvider.credential(this.otpcomfirmationResult.verificationId, this.OtpNumber);
-    signInWithCredential(this.auth,credential).then((result) => {
+    signInWithCredential(this.auth,credential).then(async(result) => {
             if(result.user){
               console.log(result);
-                let phone = result.user.phoneNumber || '';
+                let phone = result.user.phoneNumber?.substring(2) || '';
+                let uid = result.user.uid || '';
+                if(!(await this.userService.CheckUserExists(uid))){
+                      this.userService.User_AddBase(phone,uid);
+                }
                 //localStorage.setItem("phoneNumber",phone);
                 //localStorage.setItem("accessToken",result.user);
               this.navCtrl.navigateRoot('/main');
@@ -139,17 +121,6 @@ export class LoginPage extends ComponentBase implements OnInit {
         });
 
   }
-
-  // async ShowNofitication(message: string){
-  //   try {
-  //     await Toast.show({
-  //       text: message,
-  //       duration: 'short'
-  //     });
-  //   } catch (error) {
-  //     console.error('Error displaying toast:', error);
-  //   }
-  // }
 
 
 }

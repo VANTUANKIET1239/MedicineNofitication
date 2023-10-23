@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { NofiticationService } from './../Services/nofitication-service/nofitication.service';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import {register} from 'swiper/element/bundle';
 import { Swiper } from 'swiper/types';
 import { NewsServiceService } from '../Services/news-service/news-service.service';
@@ -20,13 +21,13 @@ export class SlideshowPage implements OnInit {
   swiperRef:ElementRef|undefined;
   swiper?=Swiper;
   ListNews:News[] = [];
-
   constructor(
     private temp:NewsServiceService,
     private router: Router,
     private navCtrl: NavController,
+    private NofiticationService: NofiticationService
   ) {
-    
+
   }
 
   swiperReady() {
@@ -42,7 +43,11 @@ export class SlideshowPage implements OnInit {
         id: id
     }
     this.NavigateToPage('/detail-news',paras)
-  }
+  };
+  navigateToTab2() {
+    this.router.navigate(['/main/news']);
+  };
+  
   NavigateToPage(url:string, paras?:any){
     if(paras){
       console.log(paras);
@@ -66,5 +71,8 @@ export class SlideshowPage implements OnInit {
       this.ListNews=x;
       console.log(this.ListNews);
     })
+  }
+  schedulEvent(){
+        // this.NofiticationService.scheduleNotification('dfouewfdowebfoiuwebf');
   }
 }

@@ -18,6 +18,8 @@ import { NewsServiceService } from '../Services/news-service/news-service.servic
   ],
   declarations: [SlideshowPage],
 
+
+
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
 })

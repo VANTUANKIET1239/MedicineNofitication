@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "drugnotification-267ca"
+  },
+  "targets": {
+    "drugnotification-267ca": {
+      "hosting": {
+        "app": [
+          "drugnotification-267ca"
+        ]
+      }
+    }
+  }
+}

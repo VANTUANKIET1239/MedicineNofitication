@@ -8,6 +8,7 @@ import { from } from 'rxjs';
 import { AlertController, IonModal, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { ComponentBase } from '../shared/ComponentBase/ComponentBase';
 import { Auth } from '@angular/fire/auth';
+import { NofiticationService } from '../Services/nofitication-service/nofitication.service';
 
 
 @Component({
@@ -46,7 +47,8 @@ export class Tab1Page extends ComponentBase implements  OnInit{
               private readonly loadingCtrl: LoadingController,
               private modalController: ModalController,
               private alertController: AlertController,
-              private GoogleCalendarService: GoogleCalendarService
+              private GoogleCalendarService: GoogleCalendarService,
+              private notificationService: NofiticationService
               ) {
                 super();
     this.prescriptionForm = this.formBuilder.group({
@@ -66,7 +68,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
     if(modal){
       modal.dismiss().then(x => {
         if(this.isUong){
-          this.InitMedicineList();
+          this.InitMedicineList(this.user$?.uid);
           this.isUong = false;
         }
       });
@@ -74,11 +76,13 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   }
   ngOnInit(): void {
     //this.InitMedicineList();
+
   }
-  async InitMedicineList(){
+  async InitMedicineList(userId:any){
     const loading = await this.loadingCtrl.create();
     await loading.present();
-      from(this.MedicineService.Prescription_List()).subscribe(items => {
+    console.log(userId);
+      from(this.MedicineService.Prescription_List(userId)).subscribe(items => {
           this.ListPres = items;
           console.log(this.ListPres);
       });
@@ -101,6 +105,11 @@ export class Tab1Page extends ComponentBase implements  OnInit{
               await this.GoogleCalendarService.DeleteEvent(x);
             });
         }
+        if(presItem.dayOfWeeks && presItem.dayOfWeeks.length > 0 ){
+          presItem.dayOfWeeks.forEach(async x => {
+            await this.notificationService.CancelSchedule(x);
+          });
+      }
         if(await this.MedicineService.Prescription_Del(pres.prescriptionId,IdDTs)){
             this.ShowNofitication("Xóa đơn thuốc thành công");
         }
@@ -111,10 +120,10 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   async ionViewWillEnter(){
     const loading = await this.loadingCtrl.create();
     await loading.present();
+    console.log(this.user$?.uid);
     this.handleInputSearch();
     this.modalStates = {};
     await loading.dismiss();
-
   }
   addItem(){
 
@@ -194,12 +203,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
      });
 
   }
-  ionModalWillDismiss(){
 
-  }
-  buttonXClicked(){
-
-  }
   // async doRefresh(event:any){
 
   //     // Complete the refresh action\

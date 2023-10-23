@@ -13,6 +13,8 @@ export class Prescription {
   private _time: string[] | undefined;
   private _eventIds: string[] | undefined;
   private _prescriptionDetails!: PrescriptionDetail[];
+  private _dayOfWeeks!: number[] |undefined;
+  private _dayOfWeeksItem!: number[]| undefined;
 
   constructor(
     prescriptionId?: string,
@@ -26,7 +28,9 @@ export class Prescription {
     userId?: string,
     time?: string[],
     eventIds?:string[],
-    prescriptionDetails? :PrescriptionDetail[]
+    prescriptionDetails? :PrescriptionDetail[],
+    dayOfWeeks?:number[],
+    dayOfWeeksItem?:number[]
   ) {
     this._prescriptionId = prescriptionId;
     this._prescriptionName = prescriptionName;
@@ -40,6 +44,8 @@ export class Prescription {
     this._time = time ? time : [];
     this._eventIds = eventIds ? eventIds : [];
     this._prescriptionDetails = prescriptionDetails ? prescriptionDetails : [];
+    this._dayOfWeeks = dayOfWeeks ? dayOfWeeks : [];
+    this._dayOfWeeksItem = dayOfWeeksItem ? dayOfWeeksItem : [];
   }
 
   get prescriptionId(): string {
@@ -120,6 +126,20 @@ export class Prescription {
 
   set time(value: string[] | undefined) {
     this._time = value;
+  }
+  get dayOfWeeks(): number[] | undefined {
+    return this._dayOfWeeks;
+  }
+
+  set dayOfWeeks(value: number[] | undefined) {
+    this._dayOfWeeks = value;
+  }
+  get dayOfWeeksItem(): number[] | undefined {
+    return this._dayOfWeeksItem;
+  }
+
+  set dayOfWeeksItem(value: number[] | undefined) {
+    this._dayOfWeeksItem = value;
   }
   get eventIds(): string[] | undefined {
     return this._eventIds;

@@ -28,7 +28,7 @@
     span.like-count {
       font-size: 12px;
       font-weight: bold;
-      color: #ff0000;
+      color: #666;
     }
   }
 
@@ -40,11 +40,11 @@
     span.like-count {
       font-size: 12px;
       font-weight: bold;
-      color: #ff0000;
+      color:#666;
     }
   }
 
-  ion-icon[name="heart"] {
+  ion-icon[name="thumbs-up"] {
     font-size: 32px;
     margin-right: 4px;
   }

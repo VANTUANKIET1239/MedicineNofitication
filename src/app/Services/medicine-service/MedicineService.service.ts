@@ -1,3 +1,4 @@
+import { DayOfWeek } from './../../models/DayOfWeeks';
 import { toDate } from 'date-fns';
 import { Injectable } from '@angular/core';
 import { Firestore, addDoc, collection, doc, setDoc, updateDoc,docData, getDoc,collectionData, query, where, getDocs, deleteDoc, orderBy, arrayUnion } from '@angular/fire/firestore';
@@ -32,7 +33,9 @@ constructor(private readonly firestore: Firestore
       isAllDate:model.isAllDate,
       userId:model.userId,
       time:model.time,
-      eventIds: []
+      eventIds: [],
+      dayOfWeeks:model.dayOfWeeks,
+      dayOfWeeksItem: model.dayOfWeeksItem
     };
     try{
       console.log(prescriptionData);
@@ -80,6 +83,7 @@ constructor(private readonly firestore: Firestore
     isAllDate:model.isAllDate,
     userId:model.userId,
     time:model.time,
+    dayOfWeeksItem:model.dayOfWeeksItem
   };
   try{
     console.log(prescriptionData);
@@ -123,13 +127,14 @@ async Prescription_Detail_Upd(model:PrescriptionDetail){
     return new Prescription();
 
 }
-async Prescription_List():Promise<Prescription[]>{
+async Prescription_List(id:any):Promise<Prescription[]>{
     const prescriptionCollectionRef = collection(this.firestore,`Prescription`);
-    const allData = await getDocs(prescriptionCollectionRef);
+    const queryData = query(prescriptionCollectionRef,orderBy('fromDate', 'desc'), where('userId','==',id));
+    const allData = await getDocs(queryData);
     const result =  allData.docs.map( async(x) => {
         let data = x.data();
         var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);
-      return new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT);
+      return new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT,data['dayOfWeeks'], data['dayOfWeeksItem']);
   });
   var finalResult = Promise.all(result);
   return finalResult;
@@ -174,13 +179,15 @@ GetConverterSingle(){
                 isAllDate:pres.isAllDate,
                 userId:pres.userId,
                 time:pres.time,
-                eventIds: pres.eventIds
+                eventIds: pres.eventIds,
+                dayOfWeeks: pres.dayOfWeeks,
+                dayOfWeeksItem: pres.dayOfWeeks
             };
     },
     fromFirestore: async (snapshot:any, options:any) => {
         const data = snapshot.data(options);
         var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(snapshot.id);
-        return new Prescription(snapshot.id, data.prescriptionName, data.doctorName, data.isComplete, data.medicineStoreName, data.fromDate, data.toDate, data.isAllDate, data.userId,data.time,data.eventIds,dataDT);
+        return new Prescription(snapshot.id, data.prescriptionName, data.doctorName, data.isComplete, data.medicineStoreName, data.fromDate, data.toDate, data.isAllDate, data.userId,data.time,data.eventIds,dataDT,data.dayOfWeeks,data.dayOfWeeksItem);
     }
   };
   return PresConverter;
@@ -204,7 +211,8 @@ GetConverterSingle(){
           let data = x.data();
           if((data['prescriptionName'] as string).toLowerCase().includes((presriptionName || '').toLowerCase()) || presriptionName == '' || presriptionName == null || presriptionName == undefined){
             var dataDT:PrescriptionDetail[] = await this.Prescription_Detail_ById(x.id);
-            list.push( new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT));
+            if(new Date())
+            list.push( new Prescription(x.id, data['prescriptionName'], data['doctorName'], data['isComplete'], data['medicineStoreName'], data['fromDate'], data['toDate'], data['isAllDate'], data['userId'],data['time'],data['eventIds'],dataDT, data['dayOfWeeks'],data['dayOfWeeksItem']));
           }
     });
     return Promise.resolve(list);
@@ -215,6 +223,14 @@ GetConverterSingle(){
     const prescriptionDocRef = doc(prescriptionCollectionRef,presId);
     await setDoc(prescriptionDocRef, {
       eventIds: eventIds,
+   },{merge:true});
+  }
+  async Prescription_AddScheduleId(scheduleIds:number[], presId: string){
+    console.log("id pres: " + presId);
+    const prescriptionCollectionRef = collection(this.firestore, `Prescription`);
+    const prescriptionDocRef = doc(prescriptionCollectionRef,presId);
+    await setDoc(prescriptionDocRef, {
+      dayOfWeeks: scheduleIds,
    },{merge:true});
   }
 }
