@@ -156,8 +156,8 @@ export class Tab1Page {
       notificationTime.setHours(notificationTime.getHours() - 2); // Đặt thông báo 2 giờ trước cách lịch hẹn
   
       this.localNotificationsService.scheduleNotification(
-        'Tiêu đề thông báo',
-        'Nội dung thông báo',
+        'Thông báo lịch khám',
+        'Lịch khám lúc'+ appointment.date+ 'sắp tới',
         appointment.id, // ID của thông báo (có thể sử dụng ID của lịch hẹn)
         notificationTime.getTime()
       );
