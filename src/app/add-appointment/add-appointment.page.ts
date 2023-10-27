@@ -98,7 +98,7 @@ export class AddAppointmentPage implements OnInit {
         id:this.user$?.uid,
       };
       const cdate = new Date(this.appointment.date);
-      let check = await this.config.checkApoint('1', cdate);
+      let check = await this.config.checkApoint(this.user$?.uid, cdate);
       console.log(check);
       let checktime = await this.config.checkTime(this.appointment)
       console.log(checktime)
@@ -118,9 +118,6 @@ export class AddAppointmentPage implements OnInit {
             this.closeModal();
             this.appointmentForm.reset();
           }
-          // else {
-
-          // }
         } else {
           this.presentToast('Lịch khám cách nhau ít nhất 1h');
         }
