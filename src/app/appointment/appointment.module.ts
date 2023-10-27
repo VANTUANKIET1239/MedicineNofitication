@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { AppointmentPageRoutingModule } from './appointment-routing.module';
 
-import { AppointmentPage } from './appointment.page';
+import { Tab1Page } from './appointment.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 @NgModule({
@@ -17,6 +17,6 @@ import { ExploreContainerComponentModule } from '../explore-container/explore-co
     ExploreContainerComponentModule,
     AppointmentPageRoutingModule
   ],
-  declarations: [AppointmentPage]
+  declarations: [Tab1Page]
 })
 export class AppointmentPageModule {}
