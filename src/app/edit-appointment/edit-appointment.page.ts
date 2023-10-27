@@ -25,9 +25,9 @@ export class EditAppointmentPage implements OnInit {
   formattedToday: any;
   formattedBookday: any;
   formattedMaxday: any;
-  doctor: any[]=[];
-  private auth:Auth = inject(Auth);
-  user$ =this.auth.currentUser;
+  doctor: any[] = [];
+  private auth: Auth = inject(Auth);
+  user$ = this.auth.currentUser;
 
   constructor(
     public modalCtrl: ModalController,
@@ -53,7 +53,7 @@ export class EditAppointmentPage implements OnInit {
 
   async getData() {
     this.AppointmentService.getKhoa(this.doctor)
-     this.editApointment = await this.AppointmentService.GetAppoint(this.idAp);
+    this.editApointment = await this.AppointmentService.GetAppoint(this.idAp);
 
     this.formattedBookday = this.datePipe.transform(
       this.editApointment.date,
@@ -114,7 +114,7 @@ export class EditAppointmentPage implements OnInit {
         id: this.user$?.uid,
       };
       const cdate = new Date(this.editApointment.date);
-      let check = await this.AppointmentService.checkApoint('1', cdate);
+      let check = await this.AppointmentService.checkApoint(this.user$?.uid, cdate);
       console.log(check);
       if (check) {
         if (this.isAppointmentBookM(this.editApointment.date)) {
@@ -132,25 +132,11 @@ export class EditAppointmentPage implements OnInit {
         this.presentToast('Lịch khám mới cách lịch cũ ít nhất 1h');
       }
     } else {
-      this.nameError = this.appointmentForm.get('name')!.hasError('required')
-        ? 'Tên là trường bắt buộc'
-        : '';
-      this.addressError = this.appointmentForm
-        .get('address')!
-        .hasError('required')
-        ? 'Địa chỉ là trường bắt buộc'
-        : '';
-      this.phoneError = this.appointmentForm.get('phone')!.hasError('required')
-        ? 'Số điện thoại là trường bắt buộc'
-        : '';
-      this.dateError = this.appointmentForm.get('date')!.hasError('required')
-        ? 'Ngày khám là trường bắt buộc'
-        : '';
-      this.doctorError = this.appointmentForm
-        .get('doctor')!
-        .hasError('required')
-        ? 'Bác sĩ là trường bắt buộc'
-        : '';
+      this.nameError = this.appointmentForm.get('name')!.hasError('required') ? 'Tên là trường bắt buộc' : '';
+      this.addressError = this.appointmentForm.get('address')!.hasError('required') ? 'Địa chỉ là trường bắt buộc' : '';
+      this.phoneError = this.appointmentForm.get('phone')!.hasError('required') ? 'Số điện thoại là trường bắt buộc' : '';
+      this.dateError = this.appointmentForm.get('date')!.hasError('required') ? 'Ngày khám là trường bắt buộc' : '';
+      this.doctorError = this.appointmentForm.get('doctor')!.hasError('required') ? 'Bác sĩ là trường bắt buộc' : '';
     }
   }
 
@@ -175,10 +161,10 @@ export class EditAppointmentPage implements OnInit {
           text: 'Xác nhận',
           role: 'destructive',
           handler: async () => {
-            let check=this.AppointmentService.checkApointEdit(this.idAp,this.editApointment.date);
-            if(await check){
+            let check = this.AppointmentService.checkApointEdit(this.idAp, this.editApointment.date);
+            if (await check) {
               this.updateData();
-            }else{
+            } else {
               this.presentToast('ê ê');
             }
           },
