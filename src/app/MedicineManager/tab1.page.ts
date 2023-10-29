@@ -62,7 +62,6 @@ export class Tab1Page extends ComponentBase implements  OnInit{
   }
 
 
-  // Function to close a specific modal
   async closeModal() {
     const modal = await this.modalController.getTop();
     if(modal){
@@ -75,8 +74,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
     }
   }
   ngOnInit(): void {
-    //this.InitMedicineList();
-
+      this.InitMedicineList(this.user$?.uid);
   }
   async InitMedicineList(userId:any){
     const loading = await this.loadingCtrl.create();
@@ -88,9 +86,6 @@ export class Tab1Page extends ComponentBase implements  OnInit{
       });
     await loading.dismiss();
   }
-  submitForm(){
-
-  }
   async DelelePres(pres:Prescription){
     const loading = await this.loadingCtrl.create();
         var IdDTs:string[] = pres.prescriptionDetails.map(x => {
@@ -98,15 +93,15 @@ export class Tab1Page extends ComponentBase implements  OnInit{
         });
         await loading.present();
         // xóa lịch nhắc khỏi gg
-        var presItem = await this.MedicineService.Prescription_ById(pres.prescriptionId);
-        console.log(presItem.eventIds);
-        if(presItem.eventIds && presItem.eventIds.length > 0 ){
-            presItem.eventIds.forEach(async x => {
+        //var presItem = await this.MedicineService.Prescription_ById(pres.prescriptionId);
+        console.log(pres.eventIds);
+        if(pres.eventIds && pres.eventIds.length > 0 ){
+          pres.eventIds.forEach(async x => {
               await this.GoogleCalendarService.DeleteEvent(x);
             });
         }
-        if(presItem.dayOfWeeks && presItem.dayOfWeeks.length > 0 ){
-          presItem.dayOfWeeks.forEach(async x => {
+        if(pres.dayOfWeeks && pres.dayOfWeeks.length > 0 ){
+          pres.dayOfWeeks.forEach(async x => {
             await this.notificationService.CancelSchedule(x);
           });
       }
@@ -126,9 +121,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
     await loading.dismiss();
   }
   addItem(){
-
       this.route.navigate(['/add-medicine']);
-
   }
   editItem(id:string){
     if(id == ''){
@@ -158,10 +151,8 @@ export class Tab1Page extends ComponentBase implements  OnInit{
       this.navCtrl.navigateForward(url);
     }
   }
-  MedicineConfirmation(){
 
-  }
-  async presentAlert(id: string = '') {
+  async MedicineConfirmation(id: string = '') {
     const alert = await this.alertController.create({
       header: 'Xác nhận sử dụng ?',
       buttons:[
@@ -174,9 +165,7 @@ export class Tab1Page extends ComponentBase implements  OnInit{
           cssClass: 'alert-button-confirm',
           handler: async () => {
               this.MedicineService.Prescription_Detail_Confirm(id,'1');
-              //await this.InitMedicineList();
               await this.dismissAlert();
-              //await this.reloadModal(id);
               this.modalStates[id] = true;
               this.isUong = true;
               this.ShowNofitication("Đã ghi nhận thuốc uống thành công");
@@ -184,7 +173,6 @@ export class Tab1Page extends ComponentBase implements  OnInit{
         },
       ]
     });
-
     await alert.present();
   }
   async dismissAlert() {
@@ -201,18 +189,5 @@ export class Tab1Page extends ComponentBase implements  OnInit{
       this.ListPres = x;
       console.log(this.ListPres);
      });
-
   }
-
-  // async doRefresh(event:any){
-
-  //     // Complete the refresh action\
-  //   const loading = await this.loadingCtrl.create();
-  //   await loading.present();
-  //   this.handleInputSearch();
-  //   await loading.dismiss();
-
-  //   event.target.complete();
-
-  // }
 }

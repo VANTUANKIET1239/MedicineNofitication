@@ -117,23 +117,23 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
         else{
           this.listDayPicking[event] = true;
         }
-        console.log(this.listDayPicking);
-       console.log( Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number))
   }
-  selectedValues(event:any){
-      console.log(event);
-  }
+  // selectedValues(event:any){
+  //     console.log(event);
+  // }
   setValue(i:number){
         console.log(this.selectedValue);
         let medicineArr = this.medicineArrays;
         medicineArr.controls[i].patchValue({quantity:this.selectedValue});
   }
   ngOnInit(): void {
-   // console.log(this.GoogleCalendarService.calculateDateDifference(new Date('2023-12-28T09:00:00-07:00'), new Date('2023-12-29T17:00:00-07:00')));
-
+   this.disableGG = true;
      Preferences.get({key: 'ggtoken'}).then(x => {
       if(x.value){
-        this.disableGG = true;
+        this.IsLoginGG = true;
+        this.isAllDate = false;
+        this.disableAllDay = true;
+        this.prescriptionForm.controls['isAllDate'].patchValue({isAllDate:false});
         this.CheckGoogleLogin();
       }
       this.routeAct.queryParams.subscribe( async (params) => {
@@ -145,18 +145,7 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
      });
     });
   }
-   CheckGoogleLogin(){
-    if(this.disableGG){
-      console.log(this.disableGG);
-      var result = this.GoogleCalendarService.CheckLogin().then(re => {
-        console.log(re);
-          if(re){
-            this.googleUser = re ?? new GoogleUser();
-            this.googleLogin = false;
-          }
-      });
-    }
-  }
+
   PatchValueModel(model:Prescription){
     const arr = this.medicineArrays;
     arr.clear();
@@ -186,23 +175,33 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
     });
     console.log('patchvalue list day');
     console.log(this.listDayPicking);
-    console.log( Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number))
+    console.log( Object.keys(this.listDayPicking).filter((x) => this.listDayPicking[parseInt(x)]).map(Number));
   }
   async LoginGoogle(){
-     this.googleUser = await this.GoogleAuthService.signIn();
-
+     this.googleUser = await this.GoogleAuthService.SignIn();
+     // xử lý ẩn hiện giao diện
      this.googleLogin = false;
      this.disableGG = true;
      this.IsLoginGG = true;
-
-
   }
   async LogoutGoogle(){
     await this.GoogleAuthService.signOut();
+    // xử lý ẩn hiện giao diện
     this.disableGG = false;
     this.googleLogin = true;
     this.IsLoginGG  =false;
-
+  }
+  CheckGoogleLogin(){
+    if(this.disableGG){
+      console.log(this.disableGG);
+      var result = this.GoogleCalendarService.CheckLogin().then(re => {
+        console.log(re);
+          if(re){
+            this.googleUser = re ?? new GoogleUser();
+            this.googleLogin = false;
+          }
+      });
+    }
   }
   onGGEvent(event:any){
     var checkGG = event.detail.checked;
@@ -285,12 +284,9 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
         await loading.present();
         var result = await this.MedicineService.Prescription_Upd(this.model);
         this.model = await this.MedicineService.Prescription_ById(this.model.prescriptionId);
-        console.log("modelUpd");
-        console.log(this.model);
         if((this.model.dayOfWeeks?.length || [].length) > 0 || this.model.dayOfWeeks != undefined){
          let listdaysUpd = this.model.dayOfWeeksItem || [];
           this.model.dayOfWeeks?.forEach(x => {
-            console.log('x ' + x);
               this.localNotifications.CancelSchedule(x);
           });
           await this.localNotifications.scheduleNotification(listdaysUpd,this.model.getAllTime() || [],this.model.prescriptionName || '',this.model.prescriptionId);
@@ -332,7 +328,6 @@ export class AddMedicinePage extends ComponentBase implements OnInit {
         modelDTitem.isDone = '0';
         modelDT.push(modelDTitem);
     });
-
      this.model.prescriptionName = formValue.prescriptionName;
      this.model.doctorName = formValue.doctorName;
      this.model.medicineStoreName = formValue.medicineStoreName;

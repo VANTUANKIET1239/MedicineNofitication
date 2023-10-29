@@ -75,7 +75,7 @@ export class UserSettingPage extends ComponentBase implements OnInit  {
     }
 
     async LoginGoogle(){
-      this.googleUser = await this.GoogleAuthService.signIn();
+      this.googleUser = await this.GoogleAuthService.SignIn();
       this.disableGG = true;
       this.googleLogin = false;
   }

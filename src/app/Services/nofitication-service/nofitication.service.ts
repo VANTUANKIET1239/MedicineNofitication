@@ -26,9 +26,8 @@ export class NofiticationService {
        value: Id.toString()
      });
     }
-    else{
-      Id = parseInt(newId.value);
-    }
+    else Id = parseInt(newId.value);
+
     dayOfWeek.forEach( day => {
         times.forEach(async time => {
           ++Id;
@@ -42,10 +41,7 @@ export class NofiticationService {
                 id: Id,
                 title: 'MedicineZ nhắc uống thuốc',
                 body: `Bạn có lịch uống thuốc của đơn ${namePres} vào lúc ${hours}:${minutes}, hãy uống ngay! `,
-                schedule:
-                {
-                  on: {weekday: day, hour: hours, minute :minutes},
-                }
+                schedule:  {  on: {weekday: day, hour: hours, minute :minutes} }
              },
             ]
           }
@@ -63,8 +59,6 @@ export class NofiticationService {
       value: Id.toString()
     });
    await this.medicineService.Prescription_AddScheduleId(listScheduleIds,idPres);
-    const v = await LocalNotifications.getPending();
-    console.log(v);
 
   }
   async CancelSchedule(id:number){

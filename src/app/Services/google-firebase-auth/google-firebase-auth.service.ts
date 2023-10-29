@@ -13,7 +13,7 @@ constructor() {
         GoogleAuth.initialize();
     }
 }
-  async signIn(): Promise<GoogleUser>{
+  async SignIn(): Promise<GoogleUser>{
     var user = await GoogleAuth.signIn();
     await Preferences.set({
       key: 'ggtoken',
@@ -32,10 +32,6 @@ constructor() {
     //localStorage.removeItem("ggtoken");
     await Preferences.remove({key: 'ggtoken'});
     await Preferences.remove({key: 'User'});
-  }
-  async refresh(){
-    const kiet = await GoogleAuth.refresh();
-    console.log(kiet);
   }
 }
 

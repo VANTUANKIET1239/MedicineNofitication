@@ -36,7 +36,6 @@ defineCustomElements(window);
             ReactiveFormsModule,
             NgOtpInputModule,
             provideFirebaseApp(() => initializeApp(environment.firebase)),
-            //  provideStorage(()=> getStorage()),
             provideAuth(() => getAuth()),
             provideFirestore(() => getFirestore()),
             PipesModule,

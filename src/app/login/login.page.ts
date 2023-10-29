@@ -110,8 +110,6 @@ export class LoginPage extends ComponentBase implements OnInit {
                 if(!(await this.userService.CheckUserExists(uid))){
                       this.userService.User_AddBase(phone,uid);
                 }
-                //localStorage.setItem("phoneNumber",phone);
-                //localStorage.setItem("accessToken",result.user);
               this.navCtrl.navigateRoot('/main');
             }
         })

@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
     androidScheme: 'https'
   },
   plugins: {
-    "GoogleAuth":{
+    GoogleAuth:{
         "scopes":["profile","email"],
         "serverClientId": "328359127603-mq86l3909h5sft95nesfsqa7oful1063.apps.googleusercontent.com",
         "forceCodeForRefreshToken": true
