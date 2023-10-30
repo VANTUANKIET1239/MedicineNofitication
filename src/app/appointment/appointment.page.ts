@@ -34,9 +34,9 @@ export class Tab1Page {
    this.getdataAndScheduleNotifications();
     console.log(this.id);
     this.router
-      .navigateByUrl('/tab1', { skipLocationChange: true })
+      .navigateByUrl('/main/appointment', { skipLocationChange: true })
       .then(() => {
-        this.router.navigate(['tab1']);
+        this.router.navigate(['/main/appointment']);
       });
   }
 
@@ -50,14 +50,14 @@ export class Tab1Page {
       const appointmentDate = new Date(appointment.dateTime);
       const notificationTime = new Date(appointmentDate);
       notificationTime.setHours(notificationTime.getHours() - 2); // Đặt thông báo 2 giờ trước cách lịch hẹn
-  
+
       this.localNotificationsService.scheduleNotification(
         'Thông báo lịch khám',
         'Lịch khám lúc'+ appointment.date+ 'sắp tới',
         appointment.id, // ID của thông báo (có thể sử dụng ID của lịch hẹn)
         notificationTime.getTime()
       );
-    }); 
+    });
   }
 
   formatDateTime(inputDateTime: Date) {
@@ -79,7 +79,7 @@ export class Tab1Page {
   isAppointmentEdit(appointmentDate: Date): boolean {
     const currentDate = new Date();
     const date = new Date(appointmentDate);
-    currentDate.setHours(currentDate.getHours() + 2); 
+    currentDate.setHours(currentDate.getHours() + 2);
     return date < currentDate;
   }
 
@@ -95,7 +95,7 @@ export class Tab1Page {
     const modal = this.modalCtrl.create({
       component: AddAppointmentPage,
     });
-  
+
     if (modal) {
       modal.then((modalInstance) => {
         modalInstance.present();
@@ -107,14 +107,14 @@ export class Tab1Page {
       console.error('Failed to create modal');
     }
   }
-  
+
 
   editAppointment(appointment: any) {
     const modal = this.modalCtrl.create({
       component: EditAppointmentPage,
       componentProps: { idAp: appointment },
     });
-  
+
     if (modal) {
       modal.then((modalInstance) => {
         modalInstance.present();
@@ -126,7 +126,7 @@ export class Tab1Page {
       console.error('Failed to create modal');
     }
   }
-  
+
 
   async presentActionSheet(appointment: any) {
     const actionSheet = await this.actionSheetController.create({
@@ -141,7 +141,7 @@ export class Tab1Page {
             this.config.deleteApoint(appointment);
             console.log('Tài liệu đã được xóa thành công.');
             this.presentToast('Xóa thành công');
-            this.getdataAndScheduleNotifications();               
+            this.getdataAndScheduleNotifications();
           },
         },
         {
@@ -164,5 +164,5 @@ export class Tab1Page {
     });
     toast.present();
   }
-  
+
 }

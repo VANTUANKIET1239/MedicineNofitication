@@ -23,7 +23,7 @@ import { UserService } from '../Services/user-service/user.service';
 // measurementId: "G-XF1MGCSSBB"
 // });
 declare var gapi:any;
-// const auth = getAuth();
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -40,11 +40,8 @@ export class LoginPage extends ComponentBase implements OnInit {
   private auth:Auth = inject(Auth);
   authState$ = authState(this.auth as any);
   user$ =this.auth.currentUser;
-  constructor(private route:Router,
+  constructor(
               private navCtrl: NavController,
-              private routeAct: ActivatedRoute,
-               private googleCalendarService: GoogleCalendarService,
-               private googleAuth:GoogleFirebaseAuthService,
                private readonly loadingCtrl: LoadingController,
                private userService: UserService
     ) {
@@ -56,12 +53,9 @@ export class LoginPage extends ComponentBase implements OnInit {
 
   }
   private onInitAuth(){
-
-   // const storedToken = localStorage.getItem('accessToken');
       this.authState$.subscribe((aUser: User | null) => {
           if(aUser?.phoneNumber){
             console.log(aUser);
-         //   this.ShowNofitication(aUser.phoneNumber);
             this.navCtrl.navigateRoot('/main');
           }
           else{
@@ -71,7 +65,6 @@ export class LoginPage extends ComponentBase implements OnInit {
 
   }
   async GetOTP(){
-
         try{
           var phoneNum:string = this.phoneNumber.toString() ?? "";
           console.log(this.phoneNumber);
@@ -117,8 +110,5 @@ export class LoginPage extends ComponentBase implements OnInit {
             this.ShowNofitication("Đã có lỗi xảy ra hoặc nhập OTP sai, xin mời thử lại" + error.message);
             this.isLogin = !this.isLogin;
         });
-
   }
-
-
 }

@@ -25,7 +25,7 @@
             <ion-label label = "numberPhone" position="floating">Số điện thoại</ion-label>
             <ion-input aria-label="numberPhone" [(ngModel)]="phoneNumber" type="number" name="phone"></ion-input>
           </ion-item>
-          <ion-button class="mb-3 btn-login" expand="full" type="submit">Xác nhận</ion-button>
+          <ion-button class="mb-3 btn-login" expand="full" tyApe="submit">Xác nhận</ion-button>
           <hr/>
         </form>
         <div id="sign-in-button"></div>
@@ -33,9 +33,6 @@
 
       <ng-container *ngIf="!isLogin">
         <form (ngSubmit)="VerifyOTP()">
-
-
-            <!-- <ion-input  aria-label="otp" [(ngModel)]="OtpNumber" max="6" min="6" type="text" name="phone"></ion-input> -->
               <div class="otp-container">
                 <ng-otp-input (onInputChange)="onOtpChange($event)" [config]="{ length: 6}"></ng-otp-input>
               </div>
