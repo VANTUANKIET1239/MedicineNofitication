@@ -23,4 +23,4 @@
   - tài khoản google sử dụng lịch google:
   TK: kietvan.31201024409@st.ueh.edu.vn
   MK: 0906889483
-5. Link firebase: https://console.firebase.google.com/u/0/project/doanbanhoa/overview
+5. Link firebase: https://console.firebase.google.com/u/0/project/drugnotification-267ca/overview
