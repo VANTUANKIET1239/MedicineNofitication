@@ -20,7 +20,4 @@
 4. tài khoản test
   - số điện thoại: 6505553434
   - OTP: 453632
-  - tài khoản google sử dụng lịch google:
-  TK: kietvan.31201024409@st.ueh.edu.vn
-  MK: 0906889483
 5. Link firebase: https://console.firebase.google.com/u/0/project/drugnotification-267ca/overview
